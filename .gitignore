@@ -1,0 +1,24 @@
+# Ansys packages and generated solver data
+*.wbpz
+*_files/
+*.rst
+*.db
+*.mntr
+*.out
+*.err
+*.topo
+*.pmdb
+!FEA-Topology-Optimization/Results/optimized_geometry.pmdb
+*.aapresults
+
+# Python and Jupyter caches
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
