@@ -35,10 +35,10 @@ Mastercam source files are included for the documented Arbor Press P1 machining 
 ## Files
 
 - [Design report](Documentation/arbor_press_design_report.pdf)
-- `CAD/Parts/` — student-modeled/revised P2, P3, and P4 frame parts
-- `CAD/Drawings/` — native SolidWorks drawings and exported PDFs for P2–P4
-- `CAD/P2-Mold-Assembly/` — native P2 mold assembly, mold parts, drawing, and PDF
-- `Manufacturing/` — native Mastercam source files for the documented P1 and P2-mold operations
+- `CAD/Parts/` - student-modeled/revised P2, P3, and P4 frame parts
+- `CAD/Drawings/` - native SolidWorks drawings and exported PDFs for P2–P4
+- `CAD/P2-Mold-Assembly/` - native P2 mold assembly, mold parts, drawing, and PDF
+- `Manufacturing/` - native Mastercam source files for the documented P1 and P2-mold operations
 
 ## Limitations and public-release scope
 

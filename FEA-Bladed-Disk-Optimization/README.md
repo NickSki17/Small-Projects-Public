@@ -23,7 +23,7 @@ No physical test results are included. No final stress, deformation, modal-frequ
 
 ## Files
 
-- [Design study report](Results/fea_bladed_disk_optimization_report.pdf) — available report evidence.
+- [Design study report](Results/fea_bladed_disk_optimization_report.pdf) - available report evidence.
 
 ## Limitations and reproducibility
 
