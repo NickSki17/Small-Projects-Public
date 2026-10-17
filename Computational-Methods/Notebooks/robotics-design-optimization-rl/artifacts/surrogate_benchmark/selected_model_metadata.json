@@ -1,0 +1,42 @@
+{
+  "model": "MLP_very_wide_deep",
+  "seed": 42,
+  "input_columns": [
+    "J1",
+    "J2",
+    "J3",
+    "k_theta1",
+    "k_theta2",
+    "k_theta3"
+  ],
+  "target_columns": [
+    "omega1",
+    "omega2",
+    "omega3",
+    "theta2_max",
+    "theta3_max",
+    "alpha_max",
+    "theta_rms"
+  ],
+  "target_units": {
+    "omega1": "rad/s",
+    "omega2": "rad/s",
+    "omega3": "rad/s",
+    "theta2_max": "rad",
+    "theta3_max": "rad",
+    "alpha_max": "rad/s^2",
+    "theta_rms": "rad"
+  },
+  "input_dim": 6,
+  "output_dim": 7,
+  "selection_metric": "validation_mean_NRMSE",
+  "validation_mean_NRMSE": 0.0068229855969548225,
+  "model_type": "pytorch",
+  "model_file": "selected_model_state.pt",
+  "hidden_dims": [
+    512,
+    512,
+    512,
+    256
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "model": "MLP_wide_deep",
+  "hidden_dims": [
+    256,
+    256,
+    128
+  ],
+  "seed": 42,
+  "best_epoch": 871,
+  "training_seconds": 105.26674579991959
+}

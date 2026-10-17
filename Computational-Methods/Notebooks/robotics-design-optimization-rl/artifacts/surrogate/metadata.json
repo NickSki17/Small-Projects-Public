@@ -39,7 +39,7 @@
   "validation_rows": 750,
   "test_rows": 750,
   "best_epoch": 1580,
-  "training_seconds": 70.15743080002721,
+  "training_seconds": 82.18576300004497,
   "normalization": {
     "x_mean": [
       0.030059941112995148,

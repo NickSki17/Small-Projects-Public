@@ -313,6 +313,13 @@ def optimize_design(
         candidate = unscale_design(result.x)
         candidate_outputs = predict_design(model, candidate)
         margins = constraint_margins(candidate_outputs, baseline_outputs)
+        print(
+        f"Start result: success={result.success}, "
+        f"message={result.message!r}, "
+        f"objective={result.fun:.8f}, "
+        f"minimum_constraint_margin={np.min(margins):.8e}, "
+        f"design={candidate}"
+)
 
         feasible = bool(
             np.all(margins >= -FEASIBILITY_TOLERANCE)
@@ -322,11 +329,19 @@ def optimize_design(
 
         candidate_objective = total_inertia(candidate)
 
-        if feasible and candidate_objective < best_objective:
-            best_design = candidate
-            best_outputs = candidate_outputs
-            best_objective = candidate_objective
+        # Preserve the best solver diagnostics even when the solver
+        # does not improve on the baseline.
+        if best_result is None or (
+            result.fun < best_result.fun
+        ):
             best_result = result
+
+        # Accept a candidate only when it is feasible and improves
+        # on the best feasible design found so far.
+        if feasible and candidate_objective < best_objective:
+            best_design = candidate.copy()
+            best_outputs = candidate_outputs.copy()
+            best_objective = candidate_objective
             best_is_feasible = True
 
     return OptimizationOutcome(

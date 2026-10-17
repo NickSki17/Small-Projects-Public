@@ -1,0 +1,73 @@
+{
+  "model_directory": "artifacts\\surrogate_benchmark",
+  "objective": "minimize_total_inertia",
+  "optimization": {
+    "solver_success": false,
+    "solver_message": "Positive directional derivative for linesearch",
+    "surrogate_feasible": true,
+    "n_starts": 5,
+    "seed": 42
+  },
+  "baseline": {
+    "design": {
+      "J1": 0.030000000000000002,
+      "J2": 0.030000000000000002,
+      "J3": 0.030000000000000002,
+      "k_theta1": 27.5,
+      "k_theta2": 27.5,
+      "k_theta3": 27.5
+    },
+    "surrogate_outputs": {
+      "omega1": 13.362287521362305,
+      "omega2": 37.68866729736328,
+      "omega3": 54.488365173339844,
+      "theta2_max": 0.00692716334015131,
+      "theta3_max": 0.007070492021739483,
+      "alpha_max": 18.361228942871094,
+      "theta_rms": 0.0015932891983538866
+    },
+    "physics_outputs": {
+      "omega1": 13.47431168973881,
+      "omega2": 37.754182387475396,
+      "omega3": 54.55637423871151,
+      "theta2_max": 0.006998707752391627,
+      "theta3_max": 0.007129106483802307,
+      "alpha_max": 18.333333333333332,
+      "theta_rms": 0.001593337689029128
+    }
+  },
+  "optimized": {
+    "design": {
+      "J1": 0.02520000282675759,
+      "J2": 0.01000000000000304,
+      "J3": 0.020771241176857056,
+      "k_theta1": 36.381561307671376,
+      "k_theta2": 9.237980654944229,
+      "k_theta3": 48.90300582365402
+    },
+    "surrogate_outputs": {
+      "omega1": 14.711080551147461,
+      "omega2": 42.954795837402344,
+      "omega3": 88.12712860107422,
+      "theta2_max": 0.0022280439734458923,
+      "theta3_max": 0.003311809152364731,
+      "alpha_max": 18.361289978027344,
+      "theta_rms": 0.0012485922779887915
+    },
+    "physics_outputs": {
+      "omega1": 14.71002306611748,
+      "omega2": 42.768892094244336,
+      "omega3": 89.06849102053238,
+      "theta2_max": 0.002215527187313309,
+      "theta3_max": 0.0031479343916481694,
+      "alpha_max": 18.10299081164244,
+      "theta_rms": 0.0012529677216138713
+    }
+  },
+  "verification": {
+    "max_absolute_error_baseline": 0.11202416837650553,
+    "max_absolute_error_optimized": 0.9413624194581587,
+    "physics_evaluated": true,
+    "physics_feasibility_verified": false
+  }
+}

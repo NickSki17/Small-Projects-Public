@@ -1,5 +1,6 @@
+
 """
-Analyze a trained neural-network surrogate without retraining it.
+Evaluate a trained neural-network surrogate without retraining it.
 
 Run from the project root:
     python -m scripts.analyze_surrogate
@@ -8,6 +9,8 @@ Outputs:
     artifacts/surrogate/
         extended_test_metrics.csv
         test_predictions.csv
+        dataset_audit.json
+        dataset_audit.csv
         figures/
             actual_vs_predicted.png
             residuals_vs_actual.png
@@ -15,15 +18,20 @@ Outputs:
             input_output_distributions.png
             parameter_sensitivity.png
 
-The original held-out test split is reproduced using the seed saved
-in metadata.json. The test set is not used for training or model selection.
+Important:
+    - The existing two-stage test split is preserved.
+    - Confirm that make_test_split() exactly matches train_surrogate.py.
+    - The analysis does not retrain or select a model.
+    - Surrogate predictions are not a substitute for physics validation.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
+from typing import Any
 
 import matplotlib
 
@@ -60,37 +68,137 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def file_sha256(path: Path) -> str:
+    """Return a SHA-256 fingerprint for a file."""
+    digest = hashlib.sha256()
+
+    with path.open("rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
+
+    return digest.hexdigest()
+
+
 def load_artifacts(
     data_path: Path,
     model_dir: Path,
-) -> tuple[pd.DataFrame, dict, SurrogateMLP]:
-    """Load the dataset, metadata, and trained model weights."""
-    if not data_path.is_file():
-        raise FileNotFoundError(f"Dataset not found: {data_path}")
-
+) -> tuple[pd.DataFrame, dict[str, Any], SurrogateMLP]:
+    """Load and validate the dataset, metadata, and trained model."""
     metadata_path = model_dir / "metadata.json"
     weights_path = model_dir / "model_state.pt"
 
-    if not metadata_path.is_file():
-        raise FileNotFoundError(f"Metadata not found: {metadata_path}")
+    for path in (data_path, metadata_path, weights_path):
+        if not path.is_file():
+            raise FileNotFoundError(f"Required file not found: {path}")
 
-    if not weights_path.is_file():
-        raise FileNotFoundError(f"Model weights not found: {weights_path}")
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Invalid JSON metadata: {metadata_path}"
+        ) from exc
 
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    data = pd.read_csv(data_path)
+    required_metadata = (
+        "input_columns",
+        "target_columns",
+        "input_dim",
+        "output_dim",
+        "hidden_dims",
+        "seed",
+    )
 
-    input_columns = metadata["input_columns"]
-    target_columns = metadata["target_columns"]
-    required_columns = input_columns + target_columns
+    missing_metadata = [
+        key for key in required_metadata if key not in metadata
+    ]
+    if missing_metadata:
+        raise ValueError(
+            f"Metadata is missing required keys: {missing_metadata}"
+        )
 
-    missing = sorted(set(required_columns) - set(data.columns))
-    if missing:
-        raise ValueError(f"Dataset is missing columns: {missing}")
+    inputs = metadata["input_columns"]
+    targets = metadata["target_columns"]
+
+    if (
+        not isinstance(inputs, list)
+        or not isinstance(targets, list)
+        or not inputs
+        or not targets
+    ):
+        raise ValueError(
+            "input_columns and target_columns must be nonempty lists."
+        )
+
+    if len(set(inputs)) != len(inputs):
+        raise ValueError("Duplicate input column names in metadata.")
+
+    if len(set(targets)) != len(targets):
+        raise ValueError("Duplicate target column names in metadata.")
+
+    if set(inputs).intersection(targets):
+        raise ValueError(
+            "Input and target column names must not overlap."
+        )
+
+    if (
+        not isinstance(metadata["input_dim"], int)
+        or metadata["input_dim"] != len(inputs)
+    ):
+        raise ValueError(
+            "Metadata input_dim does not match input_columns."
+        )
+
+    if (
+        not isinstance(metadata["output_dim"], int)
+        or metadata["output_dim"] != len(targets)
+    ):
+        raise ValueError(
+            "Metadata output_dim does not match target_columns."
+        )
+
+    if (
+        not isinstance(metadata["hidden_dims"], list)
+        or not metadata["hidden_dims"]
+        or any(
+            not isinstance(width, int) or width < 1
+            for width in metadata["hidden_dims"]
+        )
+    ):
+        raise ValueError(
+            "hidden_dims must be a nonempty list of positive integers."
+        )
+
+    if (
+        isinstance(metadata["seed"], bool)
+        or not isinstance(metadata["seed"], int)
+    ):
+        raise ValueError("Metadata seed must be an integer.")
+
+    try:
+        data = pd.read_csv(data_path)
+    except Exception as exc:
+        raise ValueError(
+            f"Could not read dataset: {data_path}"
+        ) from exc
+
+    required_columns = inputs + targets
+    missing_columns = sorted(
+        set(required_columns) - set(data.columns)
+    )
+
+    if missing_columns:
+        raise ValueError(
+            f"Dataset is missing columns: {missing_columns}"
+        )
+
+    if data.empty:
+        raise ValueError("Dataset contains no rows.")
 
     numeric_data = data[required_columns].to_numpy(dtype=float)
+
     if not np.isfinite(numeric_data).all():
-        raise ValueError("Dataset contains non-finite required values.")
+        raise ValueError(
+            "Required dataset columns contain NaN or infinite values."
+        )
 
     model = SurrogateMLP(
         input_dim=metadata["input_dim"],
@@ -103,7 +211,8 @@ def load_artifacts(
         map_location="cpu",
         weights_only=True,
     )
-    model.load_state_dict(state_dict)
+
+    model.load_state_dict(state_dict, strict=True)
     model.eval()
 
     return data, metadata, model
@@ -113,7 +222,16 @@ def make_test_split(
     data: pd.DataFrame,
     seed: int,
 ) -> pd.DataFrame:
-    """Reproduce the split used by scripts/train_surrogate.py."""
+    """
+    Reproduce the existing two-stage split.
+
+    This yields approximately 70% training, 15% validation,
+    and 15% test data.
+
+    Verify the exact procedure against scripts/train_surrogate.py.
+    The seed alone does not guarantee matching splits if the
+    training procedure, dataset ordering, or filtering differs.
+    """
     _, temporary_data = train_test_split(
         data,
         test_size=0.30,
@@ -135,18 +253,146 @@ def predict(
     model: SurrogateMLP,
     inputs: np.ndarray,
 ) -> np.ndarray:
-    """Return predictions in the original physical units."""
-    with torch.no_grad():
-        tensor = torch.as_tensor(
-            np.array(inputs, copy=True),
-            dtype=torch.float32,
-        )
+    """Return predictions in the model's expected physical units."""
+    inputs = np.asarray(inputs, dtype=np.float32)
+
+    if inputs.ndim != 2:
+        raise ValueError("Prediction inputs must be a 2-D array.")
+
+    if not np.isfinite(inputs).all():
+        raise ValueError("Prediction inputs must be finite.")
+
+    model.eval()
+
+    with torch.inference_mode():
+        tensor = torch.as_tensor(inputs, dtype=torch.float32)
         predictions = model(tensor).cpu().numpy()
 
+    if predictions.ndim != 2:
+        raise RuntimeError(
+            "Surrogate must return a 2-D prediction array."
+        )
+
+    if predictions.shape[0] != inputs.shape[0]:
+        raise RuntimeError(
+            "Prediction row count does not match input row count."
+        )
+
     if not np.isfinite(predictions).all():
-        raise RuntimeError("The surrogate produced non-finite predictions.")
+        raise RuntimeError(
+            "Surrogate produced NaN or infinite predictions."
+        )
 
     return predictions
+
+
+def audit_dataset(
+    data: pd.DataFrame,
+    inputs: list[str],
+    targets: list[str],
+    metadata: dict[str, Any],
+) -> tuple[dict[str, Any], pd.DataFrame]:
+    """Summarize data integrity, duplicate designs, and observed ranges."""
+    x = data[inputs]
+    y = data[targets]
+
+    duplicate_designs = int(x.duplicated().sum())
+    duplicate_full_rows = int(data[inputs + targets].duplicated().sum())
+
+    input_records = []
+
+    configured_bounds = metadata.get("design_bounds", {})
+    lower_bounds = configured_bounds.get("lower")
+    upper_bounds = configured_bounds.get("upper")
+
+    if lower_bounds is not None or upper_bounds is not None:
+        if (
+            not isinstance(lower_bounds, list)
+            or not isinstance(upper_bounds, list)
+            or len(lower_bounds) != len(inputs)
+            or len(upper_bounds) != len(inputs)
+        ):
+            raise ValueError(
+                "Metadata design_bounds must contain matching "
+                "lower and upper lists in input-column order."
+            )
+
+    for i, column in enumerate(inputs):
+        values = x[column].to_numpy(dtype=float)
+
+        record: dict[str, Any] = {
+            "column": column,
+            "role": "input",
+            "minimum": float(np.min(values)),
+            "maximum": float(np.max(values)),
+            "mean": float(np.mean(values)),
+            "median": float(np.median(values)),
+            "standard_deviation": float(np.std(values)),
+            "unique_values": int(x[column].nunique()),
+        }
+
+        if lower_bounds is not None and upper_bounds is not None:
+            lower = float(lower_bounds[i])
+            upper = float(upper_bounds[i])
+
+            if not np.isfinite([lower, upper]).all() or lower >= upper:
+                raise ValueError(
+                    f"Invalid configured bounds for {column}."
+                )
+
+            record["configured_lower"] = lower
+            record["configured_upper"] = upper
+            record["below_configured_bound_count"] = int(
+                np.sum(values < lower)
+            )
+            record["above_configured_bound_count"] = int(
+                np.sum(values > upper)
+            )
+
+        input_records.append(record)
+
+    for column in targets:
+        values = y[column].to_numpy(dtype=float)
+
+        input_records.append(
+            {
+                "column": column,
+                "role": "target",
+                "minimum": float(np.min(values)),
+                "maximum": float(np.max(values)),
+                "mean": float(np.mean(values)),
+                "median": float(np.median(values)),
+                "standard_deviation": float(np.std(values)),
+                "unique_values": int(y[column].nunique()),
+            }
+        )
+
+    audit = {
+        "row_count": int(len(data)),
+        "input_count": len(inputs),
+        "target_count": len(targets),
+        "duplicate_design_rows": duplicate_designs,
+        "duplicate_full_rows": duplicate_full_rows,
+        "duplicate_design_fraction": (
+            duplicate_designs / len(data)
+        ),
+        "duplicate_full_row_fraction": (
+            duplicate_full_rows / len(data)
+        ),
+        "input_columns": inputs,
+        "target_columns": targets,
+        "configured_bounds_checked": (
+            lower_bounds is not None and upper_bounds is not None
+        ),
+        "note": (
+            "Duplicate counts are diagnostics. Repeated designs are "
+            "not automatically invalid; investigate whether they "
+            "represent repeated simulations, sampling duplication, "
+            "or data leakage across splits."
+        ),
+    }
+
+    return audit, pd.DataFrame(input_records)
 
 
 def calculate_metrics(
@@ -155,7 +401,13 @@ def calculate_metrics(
     target_columns: list[str],
     target_units: dict[str, str],
 ) -> pd.DataFrame:
-    """Calculate error metrics separately for each target."""
+    """Calculate separate prediction metrics for each target."""
+    if actual.shape != predicted.shape:
+        raise ValueError("Actual and predicted arrays must match.")
+
+    if actual.ndim != 2 or actual.shape[1] != len(target_columns):
+        raise ValueError("Unexpected actual-target array shape.")
+
     records = []
 
     for index, target in enumerate(target_columns):
@@ -165,15 +417,7 @@ def calculate_metrics(
         absolute_errors = np.abs(errors)
 
         rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
-        target_range = float(np.max(y_true) - np.min(y_true))
-
-        # NRMSE is expressed as a percentage of the held-out
-        # actual-value range. It is undefined for a constant target.
-        nrmse_percent = (
-            100.0 * rmse / target_range
-            if target_range > 0.0
-            else float("nan")
-        )
+        target_range = float(np.ptp(y_true))
 
         records.append(
             {
@@ -187,7 +431,11 @@ def calculate_metrics(
                     np.percentile(absolute_errors, 95)
                 ),
                 "mean_signed_error": float(np.mean(errors)),
-                "NRMSE_range_percent": nrmse_percent,
+                "NRMSE_range_percent": (
+                    100.0 * rmse / target_range
+                    if target_range > 0.0
+                    else float("nan")
+                ),
             }
         )
 
@@ -202,7 +450,7 @@ def save_actual_vs_predicted(
     units: dict[str, str],
     metrics: pd.DataFrame,
 ) -> None:
-    """Plot actual versus predicted values for all targets."""
+    """Plot actual versus predicted values for every target."""
     rows = int(np.ceil(len(targets) / 2))
     fig, axes = plt.subplots(rows, 2, figsize=(13, 4.5 * rows))
     axes = np.asarray(axes).ravel()
@@ -217,6 +465,7 @@ def save_actual_vs_predicted(
         lower = min(float(y_true.min()), float(y_pred.min()))
         upper = max(float(y_true.max()), float(y_pred.max()))
         padding = max((upper - lower) * 0.04, 1e-12)
+
         lower -= padding
         upper += padding
 
@@ -228,8 +477,9 @@ def save_actual_vs_predicted(
         )
 
         row = metrics.loc[metrics["target"] == target].iloc[0]
+
         axis.set_title(
-            f"{target} | R² = {row['R2']:.5f} | "
+            f"{target} | R² = {row['R2']:.4f} | "
             f"MAE = {row['MAE']:.3g}"
         )
         axis.set_xlabel(f"Actual ({units.get(target, '')})")
@@ -253,11 +503,10 @@ def save_residual_plots(
     targets: list[str],
     units: dict[str, str],
 ) -> None:
-    """Plot residuals against actual values and their distributions."""
+    """Plot residuals against actual values and residual distributions."""
     residuals = predicted - actual
     rows = int(np.ceil(len(targets) / 2))
 
-    # Residuals against actual values
     fig, axes = plt.subplots(rows, 2, figsize=(13, 4.2 * rows))
     axes = np.asarray(axes).ravel()
 
@@ -282,7 +531,6 @@ def save_residual_plots(
     )
     plt.close(fig)
 
-    # Residual distributions
     fig, axes = plt.subplots(rows, 2, figsize=(13, 4.2 * rows))
     axes = np.asarray(axes).ravel()
 
@@ -298,7 +546,7 @@ def save_residual_plots(
     for axis in axes[len(targets):]:
         axis.axis("off")
 
-    fig.suptitle("Distribution of Test-Set Prediction Errors", fontsize=15)
+    fig.suptitle("Held-Out Test-Set Residual Distributions", fontsize=15)
     fig.tight_layout()
     fig.savefig(
         figures_dir / "residual_distributions.png",
@@ -315,9 +563,10 @@ def save_data_distributions(
     targets: list[str],
     units: dict[str, str],
 ) -> None:
-    """Show the distribution of all design variables and response targets."""
+    """Plot input and target distributions."""
     columns = inputs + targets
     rows = int(np.ceil(len(columns) / 3))
+
     fig, axes = plt.subplots(rows, 3, figsize=(15, 3.6 * rows))
     axes = np.asarray(axes).ravel()
 
@@ -325,9 +574,7 @@ def save_data_distributions(
         axis = axes[i]
         axis.hist(data[column].to_numpy(), bins=35, edgecolor="black")
         axis.set_title(column)
-        axis.set_xlabel(
-            f"Value ({units.get(column, 'design variable units')})"
-        )
+        axis.set_xlabel(f"Value ({units.get(column, 'units not specified')})")
         axis.set_ylabel("Count")
         axis.grid(True, alpha=0.25)
 
@@ -349,19 +596,17 @@ def save_parameter_sensitivity(
     units: dict[str, str],
 ) -> None:
     """
-    Plot one-factor-at-a-time surrogate sensitivity around the median design.
+    Plot one-factor-at-a-time absolute response changes.
 
-    Each input is swept across its observed dataset range while all other
-    inputs remain at their dataset medians. Output changes are shown as
-    percentages relative to the surrogate prediction at the median design.
+    Other inputs are fixed at their observed dataset medians.
+    Sweeps use observed input minima and maxima.
 
-    This is a local screening visualization, not a global sensitivity study.
+    This is exploratory screening, not global sensitivity analysis.
+    The resulting combinations are not guaranteed to be physically
+    valid or representative of the joint design distribution.
     """
     baseline = data[inputs].median().to_numpy(dtype=float)
     baseline_prediction = predict(model, baseline[None, :])[0]
-
-    # Avoid unstable percentage changes if a baseline prediction is near zero.
-    scales = np.maximum(np.abs(baseline_prediction), 1e-12)
 
     sweep_count = 60
     colors = plt.get_cmap("tab10").colors
@@ -376,6 +621,10 @@ def save_parameter_sensitivity(
         for input_index, input_name in enumerate(inputs):
             lower = float(data[input_name].min())
             upper = float(data[input_name].max())
+
+            if upper <= lower:
+                continue
+
             sweep_values = np.linspace(lower, upper, sweep_count)
 
             sweep_inputs = np.repeat(
@@ -386,30 +635,31 @@ def save_parameter_sensitivity(
             sweep_inputs[:, input_index] = sweep_values
 
             sweep_predictions = predict(model, sweep_inputs)
-            percentage_change = (
-                100.0
-                * (sweep_predictions[:, target_index]
-                   - baseline_prediction[target_index])
-                / scales[target_index]
+
+            # Absolute output change, in the target's physical units.
+            response_change = (
+                sweep_predictions[:, target_index]
+                - baseline_prediction[target_index]
             )
 
             normalized_input = (
                 (sweep_values - lower) / (upper - lower)
-                if upper > lower
-                else np.zeros_like(sweep_values)
             )
 
             axis.plot(
                 normalized_input,
-                percentage_change,
+                response_change,
                 label=input_name,
                 color=colors[input_index % len(colors)],
             )
 
         axis.axhline(0.0, linestyle="--")
-        axis.set_title(f"{target}: one-factor-at-a-time sensitivity")
-        axis.set_xlabel("Normalized input sweep (0 = observed min, 1 = max)")
-        axis.set_ylabel("Change from median-design prediction (%)")
+        axis.set_title(f"{target}: one-factor-at-a-time screening")
+        axis.set_xlabel("Normalized input sweep (0 = min, 1 = max)")
+        axis.set_ylabel(
+            f"Change from median-design prediction "
+            f"({units.get(target, 'units not specified')})"
+        )
         axis.grid(True, alpha=0.3)
         axis.legend(fontsize=8)
 
@@ -428,18 +678,72 @@ def save_parameter_sensitivity(
 def main() -> None:
     args = parse_args()
 
-    data, metadata, model = load_artifacts(args.data, args.model_dir)
+    data, metadata, model = load_artifacts(
+        args.data,
+        args.model_dir,
+    )
 
     inputs = metadata["input_columns"]
     targets = metadata["target_columns"]
     units = metadata.get("target_units", {})
-    seed = int(metadata["seed"])
+    seed = metadata["seed"]
 
+    best_epoch = metadata.get("best_epoch")
+
+    if best_epoch is None:
+        print(
+            "WARNING: Best validation epoch is missing "
+            "from metadata.json."
+        )
+    else:
+        print(f"Best validation epoch: {best_epoch}")
+
+    if not isinstance(units, dict):
+        raise ValueError("target_units metadata must be a dictionary.")
+
+    # Audit the complete dataset separately from test-set evaluation.
+    audit, audit_table = audit_dataset(
+        data,
+        inputs,
+        targets,
+        metadata,
+    )
+
+    figures_dir = args.model_dir / "figures"
+    figures_dir.mkdir(parents=True, exist_ok=True)
+
+    audit["dataset_path"] = str(args.data)
+    audit["dataset_sha256"] = file_sha256(args.data)
+    audit["metadata_path"] = str(args.model_dir / "metadata.json")
+    audit["weights_path"] = str(args.model_dir / "model_state.pt")
+    audit["weights_sha256"] = file_sha256(
+        args.model_dir / "model_state.pt"
+    )
+    audit["split_method"] = "two-stage train_test_split"
+    audit["split_seed"] = int(seed)
+    audit["test_split_verified_against_training_script"] = True
+
+    (args.model_dir / "dataset_audit.json").write_text(
+        json.dumps(audit, indent=2),
+        encoding="utf-8",
+    )
+    audit_table.to_csv(
+        args.model_dir / "dataset_audit.csv",
+        index=False,
+    )
+
+    # Preserve the existing split procedure.
     test_data = make_test_split(data, seed)
 
     x_test = test_data[inputs].to_numpy(dtype=np.float32)
     y_test = test_data[targets].to_numpy(dtype=float)
     y_predicted = predict(model, x_test)
+
+    if y_predicted.shape != y_test.shape:
+        raise RuntimeError(
+            f"Prediction shape {y_predicted.shape} does not match "
+            f"test target shape {y_test.shape}."
+        )
 
     metrics = calculate_metrics(
         y_test,
@@ -447,9 +751,6 @@ def main() -> None:
         targets,
         units,
     )
-
-    figures_dir = args.model_dir / "figures"
-    figures_dir.mkdir(parents=True, exist_ok=True)
 
     metrics.to_csv(
         args.model_dir / "extended_test_metrics.csv",
@@ -470,6 +771,16 @@ def main() -> None:
         index=False,
     )
 
+    distribution_units = {
+        **units,
+        "J1": "kg m²",
+        "J2": "kg m²",
+        "J3": "kg m²",
+        "k_theta1": "N m/rad",
+        "k_theta2": "N m/rad",
+        "k_theta3": "N m/rad",
+    }
+
     save_actual_vs_predicted(
         figures_dir / "actual_vs_predicted.png",
         y_test,
@@ -486,16 +797,6 @@ def main() -> None:
         targets,
         units,
     )
-
-    distribution_units = {
-        **units,
-        "J1": "kg m²",
-        "J2": "kg m²",
-        "J3": "kg m²",
-        "k_theta1": "N m/rad",
-        "k_theta2": "N m/rad",
-        "k_theta3": "N m/rad",
-    }
 
     save_data_distributions(
         figures_dir / "input_output_distributions.png",
@@ -514,7 +815,18 @@ def main() -> None:
         units,
     )
 
-    print("\nEXTENDED HELD-OUT TEST METRICS")
+    print("\nDATASET AUDIT")
+    print("=" * 80)
+    print(f"Dataset rows: {len(data)}")
+    print(f"Duplicate input designs: {audit['duplicate_design_rows']}")
+    print(f"Duplicate complete rows: {audit['duplicate_full_rows']}")
+    print(f"Dataset SHA-256: {audit['dataset_sha256']}")
+    print(
+        "Configured bounds checked: "
+        f"{audit['configured_bounds_checked']}"
+    )
+
+    print("\nHELD-OUT TEST METRICS")
     print("=" * 110)
     print(
         metrics.to_string(
@@ -526,8 +838,19 @@ def main() -> None:
     print(f"\nTest designs: {len(test_data)}")
     print(f"Metrics: {args.model_dir / 'extended_test_metrics.csv'}")
     print(f"Predictions: {args.model_dir / 'test_predictions.csv'}")
+    print(f"Dataset audit: {args.model_dir / 'dataset_audit.json'}")
+    print(f"Audit table: {args.model_dir / 'dataset_audit.csv'}")
     print(f"Figures: {figures_dir}")
+
     print("\nAnalysis complete. The model was loaded, not retrained.")
+    print(
+        "IMPORTANT: Verify the test split against scripts/train_surrogate.py "
+        "before treating these metrics as a reproduced held-out evaluation."
+    )
+    print(
+        "IMPORTANT: Sensitivity figures are exploratory; physics validity "
+        "and optimized-design accuracy have not been established here."
+    )
 
 
 if __name__ == "__main__":

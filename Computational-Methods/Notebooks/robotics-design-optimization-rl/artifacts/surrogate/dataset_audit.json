@@ -1,0 +1,36 @@
+{
+  "row_count": 5000,
+  "input_count": 6,
+  "target_count": 7,
+  "duplicate_design_rows": 0,
+  "duplicate_full_rows": 0,
+  "duplicate_design_fraction": 0.0,
+  "duplicate_full_row_fraction": 0.0,
+  "input_columns": [
+    "J1",
+    "J2",
+    "J3",
+    "k_theta1",
+    "k_theta2",
+    "k_theta3"
+  ],
+  "target_columns": [
+    "omega1",
+    "omega2",
+    "omega3",
+    "theta2_max",
+    "theta3_max",
+    "alpha_max",
+    "theta_rms"
+  ],
+  "configured_bounds_checked": false,
+  "note": "Duplicate counts are diagnostics. Repeated designs are not automatically invalid; investigate whether they represent repeated simulations, sampling duplication, or data leakage across splits.",
+  "dataset_path": "data\\full_dataset.csv",
+  "dataset_sha256": "df6b64e9f43d4e341e67094f2713d2ef5459a134cdbf74cc2ec7a12aae4641a7",
+  "metadata_path": "artifacts\\surrogate\\metadata.json",
+  "weights_path": "artifacts\\surrogate\\model_state.pt",
+  "weights_sha256": "688e8654e773999493f369fc7c2dff6c5a0a2344a63ba107a40879d619f3c405",
+  "split_method": "two-stage train_test_split",
+  "split_seed": 42,
+  "test_split_verified_against_training_script": true
+}
