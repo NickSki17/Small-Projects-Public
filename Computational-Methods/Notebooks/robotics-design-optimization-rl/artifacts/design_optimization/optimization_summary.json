@@ -1,0 +1,76 @@
+{
+  "objective": "minimize total rotational inertia",
+  "constraint_definition": "Natural frequencies >= baseline; response metrics <= baseline",
+  "baseline_design": {
+    "J1": 0.030000000000000002,
+    "J2": 0.030000000000000002,
+    "J3": 0.030000000000000002,
+    "k_theta1": 27.5,
+    "k_theta2": 27.5,
+    "k_theta3": 27.5
+  },
+  "optimized_design": {
+    "J1": 0.02656929423316689,
+    "J2": 0.01,
+    "J3": 0.012634522517582186,
+    "k_theta1": 36.381561307671376,
+    "k_theta2": 9.237980654944229,
+    "k_theta3": 48.90300582365402
+  },
+  "baseline_total_inertia": 0.09000000000000001,
+  "optimized_total_inertia": 0.04920381675074908,
+  "inertia_reduction_percent": 45.3290924991677,
+  "baseline_surrogate_outputs": {
+    "omega1": 13.47637939453125,
+    "omega2": 38.0401611328125,
+    "omega3": 54.893985748291016,
+    "theta2_max": 0.006906458642333746,
+    "theta3_max": 0.006836259737610817,
+    "alpha_max": 18.03859519958496,
+    "theta_rms": 0.001579588744789362
+  },
+  "optimized_surrogate_outputs": {
+    "omega1": 17.00350570678711,
+    "omega2": 43.3524055480957,
+    "omega3": 94.45838928222656,
+    "theta2_max": 0.0038869441486895084,
+    "theta3_max": 0.004866421688348055,
+    "alpha_max": 18.03859519958496,
+    "theta_rms": 0.0013317385455593467
+  },
+  "baseline_physics_outputs": {
+    "omega1": 13.47431168973881,
+    "omega2": 37.754182387475396,
+    "omega3": 54.55637423871151,
+    "theta2_max": 0.006998707752391627,
+    "theta3_max": 0.007129106483802307,
+    "alpha_max": 18.333333333333332,
+    "theta_rms": 0.001593337689029128
+  },
+  "optimized_physics_outputs": {
+    "omega1": 17.16950752469112,
+    "omega2": 42.20099265630502,
+    "omega3": 96.57106847356431,
+    "theta2_max": 0.0037151403816036654,
+    "theta3_max": 0.005375415528146405,
+    "alpha_max": 17.17002399923291,
+    "theta_rms": 0.001347359479110163
+  },
+  "surrogate_feasible": true,
+  "true_physics_feasible": true,
+  "true_physics_constraint_margins": {
+    "omega1": 0.27424004431828153,
+    "omega2": 0.11778324910314608,
+    "omega3": 0.7701152215691136,
+    "theta2_max": 0.46916766451147895,
+    "theta3_max": 0.24599028779277987,
+    "alpha_max": 0.06345323640547751,
+    "theta_rms": 0.15437920762976964
+  },
+  "solver": {
+    "success": true,
+    "message": "Optimization terminated successfully",
+    "iterations": 58
+  },
+  "interpretation": "True-physics feasibility is determined by evaluating the selected design with the original numerical model. A successful solver status alone does not establish engineering feasibility."
+}
