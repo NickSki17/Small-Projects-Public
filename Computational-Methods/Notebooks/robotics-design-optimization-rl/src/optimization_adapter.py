@@ -173,7 +173,7 @@ def run_optimization(
     model_dir: Path = DEFAULT_MODEL_DIR,
     n_starts: int = 5,
     seed: int = 42,
-    max_iterations: int = 500,
+    max_iterations: int = 5000,
     tolerance: float = 1e-9,
 ) -> dict[str, Any]:
     """Optimize the surrogate, verify the design, and export results."""
@@ -308,28 +308,32 @@ def run_optimization(
         encoding="utf-8",
     )
 
-    print("\nOPTIMIZATION SUMMARY")
-    print(f"Solver success: {summary['optimization']['solver_success']}")
-    print(f"Surrogate feasible: {outcome.surrogate_feasible}")
-    print("\nOptimized design:")
-    print(design_results.to_string(index=False))
-    print("\nSurrogate-versus-physics comparison:")
-    print(comparison.to_string(index=False))
-    print(f"\nResults saved to: {OUTPUT_DIR.resolve()}")
+    
     print("\nOPTIMIZER DIAGNOSTICS")
 
-    solver_result = outcome.solver_result
-
     if solver_result is None:
-        print("No solver result was retained.")
+        print("Accepted solver result: None")
+        print("The baseline design was retained.")
     else:
-        print(f"Solver success: {solver_result.success}")
-        print(f"Solver message: {solver_result.message}")
-        print(f"Iterations: {solver_result.nit}")
-        print(f"Function evaluations: {solver_result.nfev}")
-        print(f"Objective value: {solver_result.fun}")
-        print(f"Initial design: {baseline_design}")
-        print(f"Final solver candidate: {solver_result.x}")
+        print(f"Accepted solver success: {solver_result.success}")
+        print(f"Accepted solver message: {solver_result.message}")
+        print(f"Accepted solver iterations: {solver_result.nit}")
+        print(
+            "Accepted solver function evaluations: "
+            f"{solver_result.nfev}"
+        )
+        print(
+            "Accepted solver objective: "
+            f"{solver_result.fun:.8f}"
+        )
+        print(
+            "Accepted solver candidate (scaled): "
+            f"{solver_result.x}"
+        )
+
+    print(f"Surrogate feasible: {outcome.surrogate_feasible}")
+    print(f"Accepted design (physical units): {optimized_design}")
+    print(f"Baseline design (physical units): {baseline_design}")
 
     return summary
 
@@ -346,7 +350,7 @@ def main() -> None:
     )
     parser.add_argument("--n-starts", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--max-iterations", type=int, default=500)
+    parser.add_argument("--max-iterations", type=int, default=5000)
     parser.add_argument("--tolerance", type=float, default=1e-9)
     args = parser.parse_args()
 

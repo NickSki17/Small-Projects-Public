@@ -228,7 +228,7 @@ def optimize_design(
     baseline_design: ArrayLike | None = None,
     n_starts: int = 5,
     seed: int = 42,
-    max_iterations: int = 500,
+    max_iterations: int = 5000,
     tolerance: float = 1e-9,
 ) -> OptimizationOutcome:
     """
@@ -291,7 +291,8 @@ def optimize_design(
         outputs = predict_design(model, design)
         return constraint_margins(outputs, baseline_outputs)
 
-    for start in starts:
+    
+    for start_index, start in enumerate(starts, start=1):
         result = minimize(
             objective,
             x0=start,
@@ -312,14 +313,10 @@ def optimize_design(
 
         candidate = unscale_design(result.x)
         candidate_outputs = predict_design(model, candidate)
-        margins = constraint_margins(candidate_outputs, baseline_outputs)
-        print(
-        f"Start result: success={result.success}, "
-        f"message={result.message!r}, "
-        f"objective={result.fun:.8f}, "
-        f"minimum_constraint_margin={np.min(margins):.8e}, "
-        f"design={candidate}"
-)
+        margins = constraint_margins(
+            candidate_outputs,
+            baseline_outputs,
+        )
 
         feasible = bool(
             np.all(margins >= -FEASIBILITY_TOLERANCE)
@@ -329,20 +326,62 @@ def optimize_design(
 
         candidate_objective = total_inertia(candidate)
 
-        # Preserve the best solver diagnostics even when the solver
-        # does not improve on the baseline.
-        if best_result is None or (
-            result.fun < best_result.fun
-        ):
-            best_result = result
+        print(
+            f"Start {start_index}/{len(starts)}: "
+            f"success={result.success}, "
+            f"message={result.message!r}, "
+            f"objective={candidate_objective:.8f}, "
+            f"minimum_constraint_margin={np.min(margins):.8e}, "
+            f"feasible={feasible}"
+        )
 
-        # Accept a candidate only when it is feasible and improves
-        # on the best feasible design found so far.
         if feasible and candidate_objective < best_objective:
             best_design = candidate.copy()
             best_outputs = candidate_outputs.copy()
             best_objective = candidate_objective
+            best_result = result
             best_is_feasible = True
+
+
+    if best_result is None:
+        print(
+            "WARNING: No improved feasible candidate was accepted. "
+            "Returning the baseline design."
+        )
+    else:
+        print(f"Accepted solver success: {best_result.success}")
+        print(f"Accepted solver message: {best_result.message}")
+        print(f"Accepted objective: {best_result.fun:.8f}")
+
+
+    final_margins = constraint_margins(
+        best_outputs,
+        baseline_outputs,
+    )
+
+    constraint_names = (
+        "omega1_minimum",
+        "omega2_minimum",
+        "omega3_minimum",
+        "theta2_maximum",
+        "theta3_maximum",
+        "alpha_maximum",
+        "theta_rms_maximum",
+    )
+
+    print("\nACCEPTED DESIGN CONSTRAINT MARGINS")
+    for name, margin in zip(constraint_names, final_margins):
+        print(f"{name}: {margin:+.8e}")
+
+    print(
+        "Minimum margin: "
+        f"{np.min(final_margins):+.8e}"
+    )
+    print(
+        "Feasibility tolerance: "
+        f"{FEASIBILITY_TOLERANCE:.8e}"
+    )
+
 
     return OptimizationOutcome(
         baseline_design=baseline.copy(),

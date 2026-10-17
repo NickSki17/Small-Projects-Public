@@ -3,7 +3,7 @@
   "objective": "minimize_total_inertia",
   "optimization": {
     "solver_success": false,
-    "solver_message": "Positive directional derivative for linesearch",
+    "solver_message": "Iteration limit reached",
     "surrogate_feasible": true,
     "n_starts": 5,
     "seed": 42
@@ -39,8 +39,8 @@
   "optimized": {
     "design": {
       "J1": 0.02520000282675759,
-      "J2": 0.01000000000000304,
-      "J3": 0.020771241176857056,
+      "J2": 0.01,
+      "J3": 0.02077124128464368,
       "k_theta1": 36.381561307671376,
       "k_theta2": 9.237980654944229,
       "k_theta3": 48.90300582365402
@@ -55,18 +55,18 @@
       "theta_rms": 0.0012485922779887915
     },
     "physics_outputs": {
-      "omega1": 14.71002306611748,
-      "omega2": 42.768892094244336,
-      "omega3": 89.06849102053238,
-      "theta2_max": 0.002215527187313309,
-      "theta3_max": 0.0031479343916481694,
+      "omega1": 14.710023039794793,
+      "omega2": 42.768892089579,
+      "omega3": 89.06849095854602,
+      "theta2_max": 0.0022155271861867814,
+      "theta3_max": 0.003147934382470584,
       "alpha_max": 18.10299081164244,
-      "theta_rms": 0.0012529677216138713
+      "theta_rms": 0.0012529677213234606
     }
   },
   "verification": {
     "max_absolute_error_baseline": 0.11202416837650553,
-    "max_absolute_error_optimized": 0.9413624194581587,
+    "max_absolute_error_optimized": 0.9413623574718031,
     "physics_evaluated": true,
     "physics_feasibility_verified": false
   }
