@@ -27,7 +27,11 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 from numpy.typing import ArrayLike, NDArray
-from scipy.optimize import OptimizeResult, minimize
+from scipy.optimize import (
+    NonlinearConstraint,
+    OptimizeResult,
+    minimize,
+)
 
 from src.dataset_config import LOWER_BOUNDS, UPPER_BOUNDS
 from src.surrogate import SurrogateMLP
@@ -230,6 +234,7 @@ def optimize_design(
     seed: int = 42,
     max_iterations: int = 5000,
     tolerance: float = 1e-9,
+    solver: str = "SLSQP",
 ) -> OptimizationOutcome:
     """
     Minimize total inertia subject to baseline-relative constraints.
@@ -252,6 +257,14 @@ def optimize_design(
 
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be positive and finite.")
+
+    solver = solver.upper()
+
+    if solver not in {"SLSQP", "COBYQA"}:
+        raise ValueError(
+            f"Unsupported solver {solver!r}. "
+            "Choose 'SLSQP' or 'COBYQA'."
+        )
 
     if baseline_design is None:
         baseline = 0.5 * (lower + upper)
@@ -293,25 +306,76 @@ def optimize_design(
 
     
     for start_index, start in enumerate(starts, start=1):
-        result = minimize(
-            objective,
-            x0=start,
-            method="SLSQP",
-            bounds=[(0.0, 1.0)] * DESIGN_DIM,
-            constraints=[
+        if solver == "SLSQP":
+            solver_constraints = [
                 {
                     "type": "ineq",
                     "fun": constraints,
                 }
-            ],
-            options={
+            ]
+
+            options = {
                 "maxiter": max_iterations,
                 "ftol": tolerance,
                 "disp": False,
-            },
+            }
+
+        else:
+            solver_constraints = [
+                NonlinearConstraint(
+                    constraints,
+                    lb=np.zeros(OUTPUT_DIM),
+                    ub=np.full(OUTPUT_DIM, np.inf),
+                )
+            ]
+
+            options = {
+                "maxiter": max_iterations,
+                "feasibility_tol": FEASIBILITY_TOLERANCE,
+                "final_tr_radius": 1e-6,
+                "disp": False,
+            }
+
+        result = minimize(
+            objective,
+            x0=start,
+            method=solver,
+            bounds=[(0.0, 1.0)] * DESIGN_DIM,
+            constraints=solver_constraints,
+            options=options,
         )
 
-        candidate = unscale_design(result.x)
+        scaled_candidate = np.asarray(result.x, dtype=np.float64)
+
+        if (
+            scaled_candidate.shape != (DESIGN_DIM,)
+            or not np.all(np.isfinite(scaled_candidate))
+        ):
+            print(
+                f"WARNING: {solver} returned an invalid scaled candidate: "
+                f"{scaled_candidate}"
+            )
+            continue
+
+        bound_violation = max(
+            0.0,
+            float(np.max(-scaled_candidate)),
+            float(np.max(scaled_candidate - 1.0)),
+        )
+
+        if bound_violation > 1e-8:
+            print(
+                f"WARNING: {solver} returned a candidate outside "
+                f"[0, 1]; maximum violation={bound_violation:.3e}; "
+                f"x={scaled_candidate}"
+            )
+            continue
+
+        # Correct only tiny floating-point excursions after checking them.
+        scaled_candidate = np.clip(scaled_candidate, 0.0, 1.0)
+        candidate = unscale_design(scaled_candidate)
+
+        # Evaluate this candidate independently of the solver's status.
         candidate_outputs = predict_design(model, candidate)
         margins = constraint_margins(
             candidate_outputs,
@@ -319,10 +383,12 @@ def optimize_design(
         )
 
         feasible = bool(
-            np.all(margins >= -FEASIBILITY_TOLERANCE)
+            np.all(np.isfinite(margins))
+            and np.all(margins >= -FEASIBILITY_TOLERANCE)
             and np.all(candidate >= lower)
             and np.all(candidate <= upper)
         )
+
 
         candidate_objective = total_inertia(candidate)
 
