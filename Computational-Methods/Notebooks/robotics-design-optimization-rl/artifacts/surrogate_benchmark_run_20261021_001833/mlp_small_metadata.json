@@ -1,0 +1,10 @@
+{
+  "model": "MLP_small",
+  "hidden_dims": [
+    64,
+    64
+  ],
+  "seed": 42,
+  "best_epoch": 1580,
+  "training_seconds": 70.22461239999393
+}

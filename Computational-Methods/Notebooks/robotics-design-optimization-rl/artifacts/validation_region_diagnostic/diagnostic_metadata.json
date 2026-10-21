@@ -1,0 +1,15 @@
+{
+  "model": "MLP_very_wide_deep",
+  "model_type": "pytorch",
+  "model_file": "selected_model_state.pt",
+  "seed": 42,
+  "dataset_rows": 5000,
+  "validation_rows": 750,
+  "low_inertia_fraction": 0.1,
+  "low_inertia_cutoff": 0.06388300069061098,
+  "low_inertia_validation_rows": 75,
+  "inertia_definition": "J1 + J2 + J3",
+  "error_sign_convention": "prediction - actual",
+  "test_partition_evaluated": false,
+  "note": "These are empirical validation errors, not formal guarantees for unseen designs."
+}

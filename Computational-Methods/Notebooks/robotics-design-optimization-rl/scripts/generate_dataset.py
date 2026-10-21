@@ -18,6 +18,11 @@ Existing pilot files are not overwritten.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.metadata
+import json
+import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -227,6 +232,47 @@ def validate_dataset(
             )
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _dataset_provenance(dataset_path: Path, samples: int) -> dict:
+    try:
+        revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT,
+                                           text=True, stderr=subprocess.DEVNULL).strip()
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=PROJECT_ROOT,
+                                             text=True, stderr=subprocess.DEVNULL).strip())
+    except (OSError, subprocess.CalledProcessError):
+        revision, dirty = None, None
+    versions = {}
+    for package in ("numpy", "scipy", "pandas"):
+        try:
+            versions[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            versions[package] = None
+    return {
+        "dataset_sha256": _sha256_file(dataset_path),
+        "rows": samples,
+        "columns": list(("design_id",) + PARAMETER_NAMES + FREQUENCY_NAMES + METRIC_NAMES),
+        "seed": SEED,
+        "design_sampling": "SciPy LatinHypercube",
+        "lower_bounds": list(LOWER_BOUNDS),
+        "upper_bounds": list(UPPER_BOUNDS),
+        "fixed_damping_Nm_s_per_rad": list(DAMPINGS),
+        "initial_state": list(INITIAL_STATE),
+        "simulation": {"t_start_s": T_START, "t_end_s": T_END, "time_step_s": TIME_STEP,
+                       "rtol": RTOL, "atol": ATOL},
+        "source_revision": revision,
+        "source_tree_dirty": dirty,
+        "python_version": sys.version,
+        "software_versions": versions,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate the rotational torsional simulation dataset."
@@ -243,6 +289,8 @@ def main() -> None:
         default=DEFAULT_OUTPUT,
         help="Output CSV path (default: data/full_dataset.csv).",
     )
+    parser.add_argument("--overwrite", action="store_true",
+                        help="Allow replacing an existing dataset file.")
     args = parser.parse_args()
 
     if args.samples < 1:
@@ -259,6 +307,9 @@ def main() -> None:
         parser.error("The output path cannot overwrite a pilot validation file.")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    provenance_path = output_path.with_suffix(output_path.suffix + ".metadata.json")
+    if (output_path.exists() or provenance_path.exists()) and not args.overwrite:
+        parser.error(f"Dataset or provenance output already exists for {output_path}. Choose a new path or pass --overwrite.")
 
     print("ROTATIONAL TORSIONAL DATASET GENERATION")
     print("=" * 60)
@@ -308,6 +359,7 @@ def main() -> None:
 
     # Save only after every design and dataset-level check passes.
     dataset.to_csv(output_path, index=False)
+    provenance_path.write_text(json.dumps(_dataset_provenance(output_path, len(dataset)), indent=2), encoding="utf-8")
 
     elapsed = time.perf_counter() - start_time
 
@@ -318,6 +370,7 @@ def main() -> None:
     print(f"Total runtime: {elapsed:.2f} s")
     print(f"Mean runtime per design: {elapsed / len(dataset):.4f} s")
     print(f"Saved: {output_path}")
+    print(f"Provenance: {provenance_path}")
 
     print("\nNatural frequencies (rad/s)")
     print(

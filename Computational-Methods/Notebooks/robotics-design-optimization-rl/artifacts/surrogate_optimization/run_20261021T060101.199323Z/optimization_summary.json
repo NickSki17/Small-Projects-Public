@@ -1,0 +1,2536 @@
+{
+  "model_directory": "C:\\Users\\Nick\\Desktop\\Important\\Github\\Small-Projects-Public\\Computational-Methods\\Notebooks\\robotics-design-optimization-rl\\artifacts\\surrogate_benchmark_run_20261021_001833",
+  "objective": "minimize_total_inertia",
+  "configuration": {
+    "n_starts": 10,
+    "seed": 42,
+    "max_iterations": 10000,
+    "tolerance": 1e-09,
+    "slsqp_finite_difference_step_scaled": 1e-05,
+    "physics_feasibility_tolerance": 1e-06,
+    "validation_allowances_empirical": {
+      "omega1": 0.5199213027954102,
+      "omega2": 1.0658035278320312,
+      "omega3": 1.3007736206054688,
+      "theta2_max": 0.0008550956845283,
+      "theta3_max": 0.000827039591968,
+      "alpha_max": 3.0638504028320312,
+      "theta_rms": 7.5978459790349e-05
+    },
+    "low_inertia_allowances_empirical": {
+      "omega1": 0.5199213027954102,
+      "omega2": 0.6138153076171875,
+      "omega3": 1.0377044677734375,
+      "theta2_max": 0.0007522446103394,
+      "theta3_max": 0.0004347460344433,
+      "alpha_max": 2.8276443481445312,
+      "theta_rms": 4.6901870518922806e-05
+    },
+    "low_inertia_cutoff_total_inertia": 0.06388300069061098,
+    "allowance_method": "directional maximum error on existing validation partition; finite-sample empirical safeguard, not a guarantee",
+    "low_inertia_definition": "J1+J2+J3 <= validation 10th percentile cutoff",
+    "surrogate_feasibility_tolerance": 1e-05
+  },
+  "solver_runs": {
+    "SLSQP": {
+      "completed": true,
+      "solver_success": true,
+      "solver_message": "Optimization terminated successfully",
+      "iterations": 177,
+      "function_evaluations": 2362,
+      "surrogate_feasible": true,
+      "candidate_records": [
+        {
+          "candidate": "SLSQP_start_1",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 104,
+          "solver_function_evaluations": 1283,
+          "solver_objective_normalized": 0.21644442370444283,
+          "design": {
+            "J1": 0.01246666355566641,
+            "J2": 0.01,
+            "J3": 0.010000000000000021,
+            "k_theta1": 11.252027655774151,
+            "k_theta2": 8.307037576612899,
+            "k_theta3": 34.47814279223256
+          },
+          "total_inertia": 0.03246666355566643,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.17812728881836,
+            "omega3": 84.56647491455078,
+            "theta2_max": 0.0034841641318053007,
+            "theta3_max": 0.004677610471844673,
+            "alpha_max": 15.269481658935547,
+            "theta_rms": 0.0011108506005257368
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.062460401057267356,
+            "omega3_minimum": 0.5262323139293694,
+            "theta2_maximum": 0.3799912826977565,
+            "theta3_maximum": 0.22786255524173782,
+            "alpha_maximum": 6.935813201547347e-08,
+            "theta_rms_maximum": 0.2551302410732159
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06462999046328122,
+            "omega2_minimum": 0.09208997223010873,
+            "omega3_minimum": 0.5756545988005783,
+            "theta2_maximum": 0.539969375289445,
+            "theta3_maximum": 0.32656247743447886,
+            "alpha_maximum": 0.14423125415955051,
+            "theta_rms_maximum": 0.2914941865986105
+          },
+          "minimum_physics_margin": 0.06462999046328122,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_2",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 51,
+          "solver_function_evaluations": 527,
+          "solver_objective_normalized": 0.21644494926314037,
+          "design": {
+            "J1": 0.012466742389471056,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.24976148782408,
+            "k_theta2": 8.311341538713105,
+            "k_theta3": 34.42513570272675
+          },
+          "total_inertia": 0.03246674238947106,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.17683410644531,
+            "omega3": 84.51362609863281,
+            "theta2_max": 0.0034860961604863405,
+            "theta3_max": 0.0046809022314846516,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.00111108785495162
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.062426148365478884,
+            "omega3_minimum": 0.525263612899372,
+            "theta2_maximum": 0.3797152276388237,
+            "theta3_maximum": 0.2274008200092149,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.2549813370288838
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06466881687616799,
+            "omega2_minimum": 0.09213062532637584,
+            "omega3_minimum": 0.5745711187967621,
+            "theta2_maximum": 0.5394973531189478,
+            "theta3_maximum": 0.3260918365101795,
+            "alpha_maximum": 0.14414750649370955,
+            "theta_rms_maximum": 0.29131953033636904
+          },
+          "minimum_physics_margin": 0.06466881687616799,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_3",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 25,
+          "solver_function_evaluations": 195,
+          "solver_objective_normalized": 0.2164467067714442,
+          "design": {
+            "J1": 0.01246700601571662,
+            "J2": 0.010000000000000007,
+            "J3": 0.010000000000000007,
+            "k_theta1": 11.239227621298422,
+            "k_theta2": 8.330547230707399,
+            "k_theta3": 34.187392658678334
+          },
+          "total_inertia": 0.032467006015716636,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.17130661010742,
+            "omega3": 84.27587890625,
+            "theta2_max": 0.00349459913559258,
+            "theta3_max": 0.004695584997534752,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.0011121293064206839
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.06227974084217025,
+            "omega3_minimum": 0.5209057867846352,
+            "theta2_maximum": 0.37850029262409424,
+            "theta3_maximum": 0.22534126793442688,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.2543277081865897
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06482845628278788,
+            "omega2_minimum": 0.09230181320147546,
+            "omega3_minimum": 0.5697028346875175,
+            "theta2_maximum": 0.5374261113672487,
+            "theta3_maximum": 0.3239906274562391,
+            "alpha_maximum": 0.14378619589243458,
+            "theta_rms_maximum": 0.29053570443099697
+          },
+          "minimum_physics_margin": 0.06482845628278788,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_4",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 46,
+          "solver_function_evaluations": 371,
+          "solver_objective_normalized": 0.21644442055462632,
+          "design": {
+            "J1": 0.012466663083193948,
+            "J2": 0.010000000000000004,
+            "J3": 0.01,
+            "k_theta1": 11.252040214797292,
+            "k_theta2": 8.307023556615103,
+            "k_theta3": 34.47820095455609
+          },
+          "total_inertia": 0.03246666308319395,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.17812728881836,
+            "omega3": 84.5665283203125,
+            "theta2_max": 0.003484160639345646,
+            "theta3_max": 0.0046776034869253635,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.001110849785618484
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.062460401057267356,
+            "omega3_minimum": 0.5262332928390288,
+            "theta2_maximum": 0.3799917817126859,
+            "theta3_maximum": 0.22786353501659817,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.2551307525198844
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06462994736268524,
+            "omega2_minimum": 0.0920898696232999,
+            "omega3_minimum": 0.5756557191993341,
+            "theta2_maximum": 0.5399702002603202,
+            "theta3_maximum": 0.32656371809074525,
+            "alpha_maximum": 0.14423128564897925,
+            "theta_rms_maximum": 0.2914948241752868
+          },
+          "minimum_physics_margin": 0.06462994736268524,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_5",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 35,
+          "solver_function_evaluations": 303,
+          "solver_objective_normalized": 0.21644635790183558,
+          "design": {
+            "J1": 0.01246695368527534,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.240237227809633,
+            "k_theta2": 8.328890495285114,
+            "k_theta3": 34.20858807924263
+          },
+          "total_inertia": 0.03246695368527534,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.17182159423828,
+            "omega3": 84.29722595214844,
+            "theta2_max": 0.0034938559401780367,
+            "theta3_max": 0.0046942755579948425,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.001112037105485797
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.06229338129465245,
+            "omega3_minimum": 0.5212970709598816,
+            "theta2_maximum": 0.37860648300106625,
+            "theta3_maximum": 0.22552494306158122,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.25438557472393564
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.0648178994546611,
+            "omega2_minimum": 0.0922912077155309,
+            "omega3_minimum": 0.5701378285086718,
+            "theta2_maximum": 0.5376076549319864,
+            "theta3_maximum": 0.3241767587214802,
+            "alpha_maximum": 0.14381091511154942,
+            "theta_rms_maximum": 0.2906067994697966
+          },
+          "minimum_physics_margin": 0.0648178994546611,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_6",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 177,
+          "solver_function_evaluations": 2362,
+          "solver_objective_normalized": 0.21644439810892732,
+          "design": {
+            "J1": 0.012466659716339036,
+            "J2": 0.010000000000000066,
+            "J3": 0.01,
+            "k_theta1": 11.25193323977067,
+            "k_theta2": 8.307161699849932,
+            "k_theta3": 34.47729239149942
+          },
+          "total_inertia": 0.0324666597163391,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.178123474121094,
+            "omega3": 84.56565856933594,
+            "theta2_max": 0.0034842020832002163,
+            "theta3_max": 0.004677684977650642,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.0011108573526144028
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.062460300016878634,
+            "omega3_minimum": 0.5262173505960057,
+            "theta2_maximum": 0.37998586006885726,
+            "theta3_maximum": 0.227852104309894,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.25512600337224867
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06463069686784806,
+            "omega2_minimum": 0.09209128611734241,
+            "omega3_minimum": 0.5756376293131777,
+            "theta2_maximum": 0.5399602578899392,
+            "theta3_maximum": 0.3265508964609113,
+            "alpha_maximum": 0.1442296908280417,
+            "theta_rms_maximum": 0.291489103681707
+          },
+          "minimum_physics_margin": 0.06463069686784806,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_7",
+          "solver_success": false,
+          "solver_termination_status": "Positive directional derivative for linesearch",
+          "solver_iterations": 7,
+          "solver_function_evaluations": 21,
+          "solver_objective_normalized": 0.7201268302031629,
+          "design": {
+            "J1": 0.03563274535519592,
+            "J2": 0.049324676446716904,
+            "J3": 0.023061602728561628,
+            "k_theta1": 24.515884068647257,
+            "k_theta2": 30.616082578886285,
+            "k_theta3": 17.112391374000552
+          },
+          "total_inertia": 0.10801902453047445,
+          "surrogate_predictions": {
+            "omega1": 12.23979663848877,
+            "omega2": 31.49521255493164,
+            "omega3": 45.88569641113281,
+            "theta2_max": 0.006379450671374798,
+            "theta3_max": 0.008206866681575775,
+            "alpha_max": 15.30417537689209,
+            "theta_rms": 0.0017045574495568871
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.13020600936384152,
+            "omega2_minimum": -0.19401223645107235,
+            "omega3_minimum": -0.18277335301928355,
+            "theta2_maximum": -0.03369744985149281,
+            "theta3_maximum": -0.26718632889959926,
+            "alpha_maximum": -0.0018923152576793,
+            "theta_rms_maximum": -0.11748810161653434
+          },
+          "physics_margins": {
+            "omega1_minimum": -0.08938319915350901,
+            "omega2_minimum": -0.16297010329826944,
+            "omega3_minimum": -0.15849123008829014,
+            "theta2_maximum": 0.09366887535589763,
+            "theta3_maximum": -0.16546351912434631,
+            "alpha_maximum": 0.15605767930647207,
+            "theta_rms_maximum": -0.07519568453467129
+          },
+          "minimum_physics_margin": -0.16546351912434631,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": false,
+          "improves_baseline": false,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed;independent_physics_failed;does_not_improve_baseline"
+        },
+        {
+          "candidate": "SLSQP_start_8",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 48,
+          "solver_function_evaluations": 375,
+          "solver_objective_normalized": 0.21644640023683231,
+          "design": {
+            "J1": 0.01246696003552436,
+            "J2": 0.010000000000000217,
+            "J3": 0.010000000000000273,
+            "k_theta1": 11.23977674065575,
+            "k_theta2": 8.329773481570216,
+            "k_theta3": 34.19685001094582
+          },
+          "total_inertia": 0.03246696003552485,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.171546936035156,
+            "omega3": 84.28544616699219,
+            "theta2_max": 0.003494261298328638,
+            "theta3_max": 0.00469497125595808,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.001112084137275815
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.06228610638666199,
+            "omega3_minimum": 0.5210811514578872,
+            "theta2_maximum": 0.3785485640015962,
+            "theta3_maximum": 0.22542735748548992,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.25435605694478436
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.0648254319798891,
+            "omega2_minimum": 0.09229904707463499,
+            "omega3_minimum": 0.5698967039541369,
+            "theta2_maximum": 0.5375091405184422,
+            "theta3_maximum": 0.32407832517700563,
+            "alpha_maximum": 0.1437928660396799,
+            "theta_rms_maximum": 0.2905711920685883
+          },
+          "minimum_physics_margin": 0.0648254319798891,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_9",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 83,
+          "solver_function_evaluations": 799,
+          "solver_objective_normalized": 0.21644638263284718,
+          "design": {
+            "J1": 0.012466957394927078,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.239883402185162,
+            "k_theta2": 8.329572128474775,
+            "k_theta3": 34.19946282413119
+          },
+          "total_inertia": 0.03246695739492708,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.171607971191406,
+            "omega3": 84.28807067871094,
+            "theta2_max": 0.0034941695630550385,
+            "theta3_max": 0.00469481386244297,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.001112073310650885
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.06228772303288199,
+            "omega3_minimum": 0.5211292578754301,
+            "theta2_maximum": 0.37856167146040787,
+            "theta3_maximum": 0.22544943507900994,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.2543628518790939
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06482373578224943,
+            "omega2_minimum": 0.0922972891413163,
+            "omega3_minimum": 0.569950344502868,
+            "theta2_maximum": 0.537531249819788,
+            "theta3_maximum": 0.3241006158809657,
+            "alpha_maximum": 0.1437968276355458,
+            "theta_rms_maximum": 0.29057937428628455
+          },
+          "minimum_physics_margin": 0.06482373578224943,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        },
+        {
+          "candidate": "SLSQP_start_10",
+          "solver_success": true,
+          "solver_termination_status": "Optimization terminated successfully",
+          "solver_iterations": 26,
+          "solver_function_evaluations": 204,
+          "solver_objective_normalized": 0.2164462667360406,
+          "design": {
+            "J1": 0.01246694001040046,
+            "J2": 0.010000000000003449,
+            "J3": 0.010000000000002184,
+            "k_theta1": 11.241075983348782,
+            "k_theta2": 8.32731952097846,
+            "k_theta3": 34.22890152630329
+          },
+          "total_inertia": 0.03246694001040609,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.17229080200195,
+            "omega3": 84.31759643554688,
+            "theta2_max": 0.00349314883351326,
+            "theta3_max": 0.004693055525422096,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.0011119535192847252
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.062305809262469536,
+            "omega3_minimum": 0.5216704550727866,
+            "theta2_maximum": 0.3787075168904346,
+            "theta3_maximum": 0.22569607707052308,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.25443803453935776
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06480473382640084,
+            "omega2_minimum": 0.09227727719105783,
+            "omega3_minimum": 0.5705547165287677,
+            "theta2_maximum": 0.5377799842673141,
+            "theta3_maximum": 0.3243504674238489,
+            "alpha_maximum": 0.14384201205884106,
+            "theta_rms_maximum": 0.2906704272760545
+          },
+          "minimum_physics_margin": 0.06480473382640084,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        }
+      ]
+    },
+    "COBYQA": {
+      "completed": true,
+      "solver_success": true,
+      "solver_message": "The lower bound for the trust-region radius has been reached",
+      "iterations": 126,
+      "function_evaluations": 214,
+      "surrogate_feasible": true,
+      "candidate_records": [
+        {
+          "candidate": "COBYQA_start_1",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 833,
+          "solver_function_evaluations": 2389,
+          "solver_objective_normalized": 0.21036999525520778,
+          "design": {
+            "J1": 0.011555499288281172,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.427882193336096,
+            "k_theta2": 8.059275135737742,
+            "k_theta3": 31.8319800202095
+          },
+          "total_inertia": 0.03155549928828117,
+          "surrogate_predictions": {
+            "omega1": 13.979887008666992,
+            "omega2": 42.148475646972656,
+            "omega3": 81.66761779785156,
+            "theta2_max": 0.0032366071827709675,
+            "theta3_max": 0.004491593688726425,
+            "alpha_max": 16.39959144592285,
+            "theta_rms": 0.0010476792231202126
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.0010646914066975155,
+            "omega2_minimum": 0.0881621457857189,
+            "omega3_minimum": 0.4730972374667133,
+            "theta2_maximum": 0.41536309100761726,
+            "theta3_maximum": 0.2539551355027968,
+            "alpha_maximum": -0.06164228265935723,
+            "theta_rms_maximum": 0.29477744068475376
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06517626496975026,
+            "omega2_minimum": 0.12260508820462768,
+            "omega3_minimum": 0.5177585643128839,
+            "theta2_maximum": 0.5736167882301423,
+            "theta3_maximum": 0.36355820186479915,
+            "alpha_maximum": 0.08014718551272082,
+            "theta_rms_maximum": 0.33993885338310004
+          },
+          "minimum_physics_margin": 0.06517626496975026,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed"
+        },
+        {
+          "candidate": "COBYQA_start_2",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 84,
+          "solver_function_evaluations": 206,
+          "solver_objective_normalized": 0.19999999999999996,
+          "design": {
+            "J1": 0.01,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.197000379724454,
+            "k_theta2": 6.392892076779519,
+            "k_theta3": 48.67744783092363
+          },
+          "total_inertia": 0.03,
+          "surrogate_predictions": {
+            "omega1": 13.626775741577148,
+            "omega2": 44.302242279052734,
+            "omega3": 97.43165588378906,
+            "theta2_max": 0.0022392470855265856,
+            "theta3_max": 0.003392362967133522,
+            "alpha_max": 18.24191665649414,
+            "theta_rms": 0.0009332583285868168
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.027270947816718905,
+            "omega2_minimum": 0.14520924615663233,
+            "omega3_minimum": 0.7620467563068387,
+            "theta2_maximum": 0.5578694125358393,
+            "theta3_maximum": 0.40814426482642396,
+            "alpha_maximum": -0.16213274869051864,
+            "theta_rms_maximum": 0.3665895212758532
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.012260741214950688,
+            "omega2_minimum": 0.1410767878507866,
+            "omega3_minimum": 0.8413612923324023,
+            "theta2_maximum": 0.7281172968739338,
+            "theta3_maximum": 0.5497623815672176,
+            "alpha_maximum": 0.04055132055432853,
+            "theta_rms_maximum": 0.44568600725004925
+          },
+          "minimum_physics_margin": 0.012260741214950688,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed"
+        },
+        {
+          "candidate": "COBYQA_start_3",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 103,
+          "solver_function_evaluations": 246,
+          "solver_objective_normalized": 0.19999999999999996,
+          "design": {
+            "J1": 0.01,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 9.247429933416335,
+            "k_theta2": 9.902802848552891,
+            "k_theta3": 47.053155118970004
+          },
+          "total_inertia": 0.03,
+          "surrogate_predictions": {
+            "omega1": 13.835138320922852,
+            "omega2": 46.191158294677734,
+            "omega3": 97.9013442993164,
+            "theta2_max": 0.0030457335524260998,
+            "theta3_max": 0.004619132727384567,
+            "alpha_max": 19.6589298248291,
+            "theta_rms": 0.0010576427448540926
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.011807257786126901,
+            "omega2_minimum": 0.1952412133765511,
+            "omega3_minimum": 0.7706559870719225,
+            "theta2_maximum": 0.44263578721066155,
+            "theta3_maximum": 0.23606523037262128,
+            "alpha_maximum": -0.2394243760542436,
+            "theta_rms_maximum": 0.28852420146090096
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.05989455216017037,
+            "omega2_minimum": 0.21749843399128,
+            "omega3_minimum": 0.832887191727653,
+            "theta2_maximum": 0.5834972808654768,
+            "theta3_maximum": 0.34304888531765154,
+            "alpha_maximum": -0.04455815174377609,
+            "theta_rms_maximum": 0.34611377841374336
+          },
+          "minimum_physics_margin": -0.04455815174377609,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+        },
+        {
+          "candidate": "COBYQA_start_4",
+          "solver_success": false,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 101,
+          "solver_function_evaluations": 201,
+          "solver_objective_normalized": 0.19999999999999996,
+          "design": {
+            "J1": 0.01,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 6.181672341608155,
+            "k_theta2": 11.241903405703571,
+            "k_theta3": 22.252889668195408
+          },
+          "total_inertia": 0.03,
+          "surrogate_predictions": {
+            "omega1": 12.135308265686035,
+            "omega2": 42.417755126953125,
+            "omega3": 73.97219848632812,
+            "theta2_max": 0.004082604311406612,
+            "theta3_max": 0.0059899501502513885,
+            "alpha_max": 16.80832862854004,
+            "theta_rms": 0.0011103219585493207
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.1379606446438244,
+            "omega2_minimum": 0.09529458682806036,
+            "omega3_minimum": 0.3320427883962507,
+            "theta2_maximum": 0.29448404325104427,
+            "theta3_maximum": 0.043780625565358555,
+            "alpha_maximum": -0.08393703807484032,
+            "theta_rms_maximum": 0.2554620238334281
+          },
+          "physics_margins": {
+            "omega1_minimum": -0.06886154475385431,
+            "omega2_minimum": 0.1393508613233132,
+            "omega3_minimum": 0.3356024780440612,
+            "theta2_maximum": 0.4143537756246314,
+            "theta3_maximum": 0.11313995518952102,
+            "alpha_maximum": 0.04962314105572396,
+            "theta_rms_maximum": 0.27980749011813866
+          },
+          "minimum_physics_margin": -0.06886154475385431,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+        },
+        {
+          "candidate": "COBYQA_start_5",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 930,
+          "solver_function_evaluations": 2420,
+          "solver_objective_normalized": 0.37001228425949195,
+          "design": {
+            "J1": 0.01,
+            "J2": 0.035501842638923795,
+            "J3": 0.01,
+            "k_theta1": 22.17424811762963,
+            "k_theta2": 44.544233941537044,
+            "k_theta3": 26.208311528704776
+          },
+          "total_inertia": 0.0555018426389238,
+          "surrogate_predictions": {
+            "omega1": 17.018291473388672,
+            "omega2": 56.70581817626953,
+            "omega3": 87.01333618164062,
+            "theta2_max": 0.002780129900202155,
+            "theta3_max": 0.0036950355861335993,
+            "alpha_max": 65.33090209960938,
+            "theta_rms": 0.000884895387571305
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 0.22443138844393706,
+            "omega2_minimum": 0.4737443941282533,
+            "omega3_minimum": 0.5710824584126446,
+            "theta2_maximum": 0.4805861719989364,
+            "theta3_maximum": 0.36568836664510707,
+            "alpha_maximum": -2.7306228637695313,
+            "theta_rms_maximum": 0.39694274856000833
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.25958926669818094,
+            "omega2_minimum": 0.516964153627111,
+            "omega3_minimum": 0.6102482809433267,
+            "theta2_maximum": 0.6125457057625867,
+            "theta3_maximum": 0.5064801795398908,
+            "alpha_maximum": -2.6391899305000006,
+            "theta_rms_maximum": 0.44578571127911126
+          },
+          "minimum_physics_margin": -2.6391899305000006,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+        },
+        {
+          "candidate": "COBYQA_start_6",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 553,
+          "solver_function_evaluations": 1472,
+          "solver_objective_normalized": 0.2185680935605256,
+          "design": {
+            "J1": 0.012785214034078845,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.702603174960187,
+            "k_theta2": 8.0674453711525,
+            "k_theta3": 25.562822982051173
+          },
+          "total_inertia": 0.032785214034078844,
+          "surrogate_predictions": {
+            "omega1": 13.99252700805664,
+            "omega2": 40.372318267822266,
+            "omega3": 74.95552825927734,
+            "theta2_max": 0.003600016236305237,
+            "theta3_max": 0.004988004919141531,
+            "alpha_max": 15.3143310546875,
+            "theta_rms": 0.001104495138861239
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.0001266101391196317,
+            "omega2_minimum": 0.041116831417062016,
+            "omega3_minimum": 0.3500668925760235,
+            "theta2_maximum": 0.363437926192715,
+            "theta3_maximum": 0.18432351595229945,
+            "alpha_maximum": -0.0024462613192473004,
+            "theta_rms_maximum": 0.25911901364054934
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06192211167413597,
+            "omega2_minimum": 0.07277210967022807,
+            "omega3_minimum": 0.37417601568695935,
+            "theta2_maximum": 0.5102067704828004,
+            "theta3_maximum": 0.30301581658527843,
+            "alpha_maximum": 0.15655202841419313,
+            "theta_rms_maximum": 0.2881241353367219
+          },
+          "minimum_physics_margin": 0.06192211167413597,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed"
+        },
+        {
+          "candidate": "COBYQA_start_7",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 1208,
+          "solver_function_evaluations": 3425,
+          "solver_objective_normalized": 0.21622847823899566,
+          "design": {
+            "J1": 0.012434271735849352,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.49784489300334,
+            "k_theta2": 7.8958401055279115,
+            "k_theta3": 39.791572076517696
+          },
+          "total_inertia": 0.032434271735849354,
+          "surrogate_predictions": {
+            "omega1": 14.006994247436523,
+            "omega2": 41.478302001953125,
+            "omega3": 89.55230712890625,
+            "theta2_max": 0.0032372171990573406,
+            "theta3_max": 0.00437359930947423,
+            "alpha_max": 15.45446491241455,
+            "theta_rms": 0.0010831078980118036
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 0.0009470802810671586,
+            "omega2_minimum": 0.07041116820814985,
+            "omega3_minimum": 0.617620942369741,
+            "theta2_maximum": 0.41527592973328564,
+            "theta3_maximum": 0.27050621094546057,
+            "alpha_maximum": -0.010089926286177331,
+            "theta_rms_maximum": 0.2725419314543289
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.0607910828429048,
+            "omega2_minimum": 0.08896969103195707,
+            "omega3_minimum": 0.6812409351220214,
+            "theta2_maximum": 0.5890014210004241,
+            "theta3_maximum": 0.3758082204509243,
+            "alpha_maximum": 0.14925667861480751,
+            "theta_rms_maximum": 0.30991398232995904
+          },
+          "minimum_physics_margin": 0.0607910828429048,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed"
+        },
+        {
+          "candidate": "COBYQA_start_8",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 103,
+          "solver_function_evaluations": 171,
+          "solver_objective_normalized": 0.21417688706391855,
+          "design": {
+            "J1": 0.012126533059587781,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 14.083530928521105,
+            "k_theta2": 5.0,
+            "k_theta3": 40.80822092005398
+          },
+          "total_inertia": 0.032126533059587785,
+          "surrogate_predictions": {
+            "omega1": 13.190328598022461,
+            "omega2": 41.36255645751953,
+            "omega3": 89.64867401123047,
+            "theta2_max": 0.0024198279716074467,
+            "theta3_max": 0.0032582569401711226,
+            "alpha_max": 15.699138641357422,
+            "theta_rms": 0.0009343152050860226
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": -0.05966200077766959,
+            "omega2_minimum": 0.06734540073249162,
+            "omega3_minimum": 0.6193873149278324,
+            "theta2_maximum": 0.5320673798650006,
+            "theta3_maximum": 0.42695532162114225,
+            "alpha_maximum": -0.023435766046697504,
+            "theta_rms_maximum": 0.36592621147876314
+          },
+          "physics_margins": {
+            "omega1_minimum": -0.024932677356947486,
+            "omega2_minimum": 0.06853976664070638,
+            "omega3_minimum": 0.683463989881077,
+            "theta2_maximum": 0.7233064552452733,
+            "theta3_maximum": 0.6022508637760767,
+            "alpha_maximum": 0.14161791856459238,
+            "theta_rms_maximum": 0.43918121328552806
+          },
+          "minimum_physics_margin": -0.024932677356947486,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+        },
+        {
+          "candidate": "COBYQA_start_9",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 109,
+          "solver_function_evaluations": 280,
+          "solver_objective_normalized": 0.19999999999999996,
+          "design": {
+            "J1": 0.01,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.86177985083092,
+            "k_theta2": 10.051817347265791,
+            "k_theta3": 26.92263918545042
+          },
+          "total_inertia": 0.03,
+          "surrogate_predictions": {
+            "omega1": 14.84384536743164,
+            "omega2": 46.56415557861328,
+            "omega3": 77.4208755493164,
+            "theta2_max": 0.0032207886688411236,
+            "theta3_max": 0.004844306036829948,
+            "alpha_max": 21.112062454223633,
+            "theta_rms": 0.000985574210062623
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 0.06305423196825943,
+            "omega2_minimum": 0.2051208415488004,
+            "omega3_minimum": 0.39525587964565423,
+            "theta2_maximum": 0.41762329596108716,
+            "theta3_maximum": 0.20448016288106596,
+            "alpha_maximum": -0.31868615583939985,
+            "theta_rms_maximum": 0.3337553757987045
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.13400127117740834,
+            "omega2_minimum": 0.25853335449472725,
+            "omega3_minimum": 0.430410236108812,
+            "theta2_maximum": 0.5589746060679734,
+            "theta3_maximum": 0.33480411717469116,
+            "alpha_maximum": -0.1952871198961843,
+            "theta_rms_maximum": 0.37264192755159686
+          },
+          "minimum_physics_margin": -0.1952871198961843,
+          "in_bounds": true,
+          "surrogate_feasible": false,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+        },
+        {
+          "candidate": "COBYQA_start_10",
+          "solver_success": true,
+          "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+          "solver_iterations": 126,
+          "solver_function_evaluations": 214,
+          "solver_objective_normalized": 0.21682560160819186,
+          "design": {
+            "J1": 0.012523840241228787,
+            "J2": 0.01,
+            "J3": 0.01,
+            "k_theta1": 11.394629047955865,
+            "k_theta2": 8.091625880124043,
+            "k_theta3": 37.45486349950939
+          },
+          "total_inertia": 0.032523840241228785,
+          "surrogate_predictions": {
+            "omega1": 13.994233131408691,
+            "omega2": 41.24151611328125,
+            "omega3": 87.4065933227539,
+            "theta2_max": 0.003365729469805956,
+            "theta3_max": 0.0045152874663472176,
+            "alpha_max": 15.269482612609863,
+            "theta_rms": 0.0010994205949828029
+          },
+          "validation_allowances": {
+            "omega1": 0.5199213027954102,
+            "omega2": 1.0658035278320312,
+            "omega3": 1.3007736206054688,
+            "theta2_max": 0.0008550956845283,
+            "theta3_max": 0.000827039591968,
+            "alpha_max": 3.0638504028320312,
+            "theta_rms": 7.5978459790349e-05
+          },
+          "surrogate_margins": {
+            "omega1_minimum": 1.0306609565802205e-08,
+            "omega2_minimum": 0.06413938919723883,
+            "omega3_minimum": 0.5782907296110307,
+            "theta2_maximum": 0.39691364410924324,
+            "theta3_maximum": 0.250631608539828,
+            "alpha_maximum": 1.733953292060164e-08,
+            "theta_rms_maximum": 0.2623038651088707
+          },
+          "physics_margins": {
+            "omega1_minimum": 0.06292687614696546,
+            "omega2_minimum": 0.08829586883975815,
+            "omega3_minimum": 0.6356328159154856,
+            "theta2_maximum": 0.5639735845378778,
+            "theta3_maximum": 0.35105371079929903,
+            "alpha_maximum": 0.15130933326530804,
+            "theta_rms_maximum": 0.2982038157828065
+          },
+          "minimum_physics_margin": 0.06292687614696546,
+          "in_bounds": true,
+          "surrogate_feasible": true,
+          "physics_feasible": true,
+          "improves_baseline": true,
+          "accepted_for_selection": true,
+          "rejection_reason": null
+        }
+      ]
+    }
+  },
+  "candidates": {
+    "SLSQP": [
+      {
+        "candidate": "SLSQP_start_1",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 104,
+        "solver_function_evaluations": 1283,
+        "solver_objective_normalized": 0.21644442370444283,
+        "design": {
+          "J1": 0.01246666355566641,
+          "J2": 0.01,
+          "J3": 0.010000000000000021,
+          "k_theta1": 11.252027655774151,
+          "k_theta2": 8.307037576612899,
+          "k_theta3": 34.47814279223256
+        },
+        "total_inertia": 0.03246666355566643,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.17812728881836,
+          "omega3": 84.56647491455078,
+          "theta2_max": 0.0034841641318053007,
+          "theta3_max": 0.004677610471844673,
+          "alpha_max": 15.269481658935547,
+          "theta_rms": 0.0011108506005257368
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.062460401057267356,
+          "omega3_minimum": 0.5262323139293694,
+          "theta2_maximum": 0.3799912826977565,
+          "theta3_maximum": 0.22786255524173782,
+          "alpha_maximum": 6.935813201547347e-08,
+          "theta_rms_maximum": 0.2551302410732159
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06462999046328122,
+          "omega2_minimum": 0.09208997223010873,
+          "omega3_minimum": 0.5756545988005783,
+          "theta2_maximum": 0.539969375289445,
+          "theta3_maximum": 0.32656247743447886,
+          "alpha_maximum": 0.14423125415955051,
+          "theta_rms_maximum": 0.2914941865986105
+        },
+        "minimum_physics_margin": 0.06462999046328122,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_2",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 51,
+        "solver_function_evaluations": 527,
+        "solver_objective_normalized": 0.21644494926314037,
+        "design": {
+          "J1": 0.012466742389471056,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.24976148782408,
+          "k_theta2": 8.311341538713105,
+          "k_theta3": 34.42513570272675
+        },
+        "total_inertia": 0.03246674238947106,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.17683410644531,
+          "omega3": 84.51362609863281,
+          "theta2_max": 0.0034860961604863405,
+          "theta3_max": 0.0046809022314846516,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.00111108785495162
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.062426148365478884,
+          "omega3_minimum": 0.525263612899372,
+          "theta2_maximum": 0.3797152276388237,
+          "theta3_maximum": 0.2274008200092149,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.2549813370288838
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06466881687616799,
+          "omega2_minimum": 0.09213062532637584,
+          "omega3_minimum": 0.5745711187967621,
+          "theta2_maximum": 0.5394973531189478,
+          "theta3_maximum": 0.3260918365101795,
+          "alpha_maximum": 0.14414750649370955,
+          "theta_rms_maximum": 0.29131953033636904
+        },
+        "minimum_physics_margin": 0.06466881687616799,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_3",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 25,
+        "solver_function_evaluations": 195,
+        "solver_objective_normalized": 0.2164467067714442,
+        "design": {
+          "J1": 0.01246700601571662,
+          "J2": 0.010000000000000007,
+          "J3": 0.010000000000000007,
+          "k_theta1": 11.239227621298422,
+          "k_theta2": 8.330547230707399,
+          "k_theta3": 34.187392658678334
+        },
+        "total_inertia": 0.032467006015716636,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.17130661010742,
+          "omega3": 84.27587890625,
+          "theta2_max": 0.00349459913559258,
+          "theta3_max": 0.004695584997534752,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.0011121293064206839
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.06227974084217025,
+          "omega3_minimum": 0.5209057867846352,
+          "theta2_maximum": 0.37850029262409424,
+          "theta3_maximum": 0.22534126793442688,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.2543277081865897
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06482845628278788,
+          "omega2_minimum": 0.09230181320147546,
+          "omega3_minimum": 0.5697028346875175,
+          "theta2_maximum": 0.5374261113672487,
+          "theta3_maximum": 0.3239906274562391,
+          "alpha_maximum": 0.14378619589243458,
+          "theta_rms_maximum": 0.29053570443099697
+        },
+        "minimum_physics_margin": 0.06482845628278788,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_4",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 46,
+        "solver_function_evaluations": 371,
+        "solver_objective_normalized": 0.21644442055462632,
+        "design": {
+          "J1": 0.012466663083193948,
+          "J2": 0.010000000000000004,
+          "J3": 0.01,
+          "k_theta1": 11.252040214797292,
+          "k_theta2": 8.307023556615103,
+          "k_theta3": 34.47820095455609
+        },
+        "total_inertia": 0.03246666308319395,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.17812728881836,
+          "omega3": 84.5665283203125,
+          "theta2_max": 0.003484160639345646,
+          "theta3_max": 0.0046776034869253635,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.001110849785618484
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.062460401057267356,
+          "omega3_minimum": 0.5262332928390288,
+          "theta2_maximum": 0.3799917817126859,
+          "theta3_maximum": 0.22786353501659817,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.2551307525198844
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06462994736268524,
+          "omega2_minimum": 0.0920898696232999,
+          "omega3_minimum": 0.5756557191993341,
+          "theta2_maximum": 0.5399702002603202,
+          "theta3_maximum": 0.32656371809074525,
+          "alpha_maximum": 0.14423128564897925,
+          "theta_rms_maximum": 0.2914948241752868
+        },
+        "minimum_physics_margin": 0.06462994736268524,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_5",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 35,
+        "solver_function_evaluations": 303,
+        "solver_objective_normalized": 0.21644635790183558,
+        "design": {
+          "J1": 0.01246695368527534,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.240237227809633,
+          "k_theta2": 8.328890495285114,
+          "k_theta3": 34.20858807924263
+        },
+        "total_inertia": 0.03246695368527534,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.17182159423828,
+          "omega3": 84.29722595214844,
+          "theta2_max": 0.0034938559401780367,
+          "theta3_max": 0.0046942755579948425,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.001112037105485797
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.06229338129465245,
+          "omega3_minimum": 0.5212970709598816,
+          "theta2_maximum": 0.37860648300106625,
+          "theta3_maximum": 0.22552494306158122,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.25438557472393564
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.0648178994546611,
+          "omega2_minimum": 0.0922912077155309,
+          "omega3_minimum": 0.5701378285086718,
+          "theta2_maximum": 0.5376076549319864,
+          "theta3_maximum": 0.3241767587214802,
+          "alpha_maximum": 0.14381091511154942,
+          "theta_rms_maximum": 0.2906067994697966
+        },
+        "minimum_physics_margin": 0.0648178994546611,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_6",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 177,
+        "solver_function_evaluations": 2362,
+        "solver_objective_normalized": 0.21644439810892732,
+        "design": {
+          "J1": 0.012466659716339036,
+          "J2": 0.010000000000000066,
+          "J3": 0.01,
+          "k_theta1": 11.25193323977067,
+          "k_theta2": 8.307161699849932,
+          "k_theta3": 34.47729239149942
+        },
+        "total_inertia": 0.0324666597163391,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.178123474121094,
+          "omega3": 84.56565856933594,
+          "theta2_max": 0.0034842020832002163,
+          "theta3_max": 0.004677684977650642,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.0011108573526144028
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.062460300016878634,
+          "omega3_minimum": 0.5262173505960057,
+          "theta2_maximum": 0.37998586006885726,
+          "theta3_maximum": 0.227852104309894,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.25512600337224867
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06463069686784806,
+          "omega2_minimum": 0.09209128611734241,
+          "omega3_minimum": 0.5756376293131777,
+          "theta2_maximum": 0.5399602578899392,
+          "theta3_maximum": 0.3265508964609113,
+          "alpha_maximum": 0.1442296908280417,
+          "theta_rms_maximum": 0.291489103681707
+        },
+        "minimum_physics_margin": 0.06463069686784806,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_7",
+        "solver_success": false,
+        "solver_termination_status": "Positive directional derivative for linesearch",
+        "solver_iterations": 7,
+        "solver_function_evaluations": 21,
+        "solver_objective_normalized": 0.7201268302031629,
+        "design": {
+          "J1": 0.03563274535519592,
+          "J2": 0.049324676446716904,
+          "J3": 0.023061602728561628,
+          "k_theta1": 24.515884068647257,
+          "k_theta2": 30.616082578886285,
+          "k_theta3": 17.112391374000552
+        },
+        "total_inertia": 0.10801902453047445,
+        "surrogate_predictions": {
+          "omega1": 12.23979663848877,
+          "omega2": 31.49521255493164,
+          "omega3": 45.88569641113281,
+          "theta2_max": 0.006379450671374798,
+          "theta3_max": 0.008206866681575775,
+          "alpha_max": 15.30417537689209,
+          "theta_rms": 0.0017045574495568871
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.13020600936384152,
+          "omega2_minimum": -0.19401223645107235,
+          "omega3_minimum": -0.18277335301928355,
+          "theta2_maximum": -0.03369744985149281,
+          "theta3_maximum": -0.26718632889959926,
+          "alpha_maximum": -0.0018923152576793,
+          "theta_rms_maximum": -0.11748810161653434
+        },
+        "physics_margins": {
+          "omega1_minimum": -0.08938319915350901,
+          "omega2_minimum": -0.16297010329826944,
+          "omega3_minimum": -0.15849123008829014,
+          "theta2_maximum": 0.09366887535589763,
+          "theta3_maximum": -0.16546351912434631,
+          "alpha_maximum": 0.15605767930647207,
+          "theta_rms_maximum": -0.07519568453467129
+        },
+        "minimum_physics_margin": -0.16546351912434631,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": false,
+        "improves_baseline": false,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed;independent_physics_failed;does_not_improve_baseline"
+      },
+      {
+        "candidate": "SLSQP_start_8",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 48,
+        "solver_function_evaluations": 375,
+        "solver_objective_normalized": 0.21644640023683231,
+        "design": {
+          "J1": 0.01246696003552436,
+          "J2": 0.010000000000000217,
+          "J3": 0.010000000000000273,
+          "k_theta1": 11.23977674065575,
+          "k_theta2": 8.329773481570216,
+          "k_theta3": 34.19685001094582
+        },
+        "total_inertia": 0.03246696003552485,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.171546936035156,
+          "omega3": 84.28544616699219,
+          "theta2_max": 0.003494261298328638,
+          "theta3_max": 0.00469497125595808,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.001112084137275815
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.06228610638666199,
+          "omega3_minimum": 0.5210811514578872,
+          "theta2_maximum": 0.3785485640015962,
+          "theta3_maximum": 0.22542735748548992,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.25435605694478436
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.0648254319798891,
+          "omega2_minimum": 0.09229904707463499,
+          "omega3_minimum": 0.5698967039541369,
+          "theta2_maximum": 0.5375091405184422,
+          "theta3_maximum": 0.32407832517700563,
+          "alpha_maximum": 0.1437928660396799,
+          "theta_rms_maximum": 0.2905711920685883
+        },
+        "minimum_physics_margin": 0.0648254319798891,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_9",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 83,
+        "solver_function_evaluations": 799,
+        "solver_objective_normalized": 0.21644638263284718,
+        "design": {
+          "J1": 0.012466957394927078,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.239883402185162,
+          "k_theta2": 8.329572128474775,
+          "k_theta3": 34.19946282413119
+        },
+        "total_inertia": 0.03246695739492708,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.171607971191406,
+          "omega3": 84.28807067871094,
+          "theta2_max": 0.0034941695630550385,
+          "theta3_max": 0.00469481386244297,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.001112073310650885
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.06228772303288199,
+          "omega3_minimum": 0.5211292578754301,
+          "theta2_maximum": 0.37856167146040787,
+          "theta3_maximum": 0.22544943507900994,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.2543628518790939
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06482373578224943,
+          "omega2_minimum": 0.0922972891413163,
+          "omega3_minimum": 0.569950344502868,
+          "theta2_maximum": 0.537531249819788,
+          "theta3_maximum": 0.3241006158809657,
+          "alpha_maximum": 0.1437968276355458,
+          "theta_rms_maximum": 0.29057937428628455
+        },
+        "minimum_physics_margin": 0.06482373578224943,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      },
+      {
+        "candidate": "SLSQP_start_10",
+        "solver_success": true,
+        "solver_termination_status": "Optimization terminated successfully",
+        "solver_iterations": 26,
+        "solver_function_evaluations": 204,
+        "solver_objective_normalized": 0.2164462667360406,
+        "design": {
+          "J1": 0.01246694001040046,
+          "J2": 0.010000000000003449,
+          "J3": 0.010000000000002184,
+          "k_theta1": 11.241075983348782,
+          "k_theta2": 8.32731952097846,
+          "k_theta3": 34.22890152630329
+        },
+        "total_inertia": 0.03246694001040609,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.17229080200195,
+          "omega3": 84.31759643554688,
+          "theta2_max": 0.00349314883351326,
+          "theta3_max": 0.004693055525422096,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.0011119535192847252
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.062305809262469536,
+          "omega3_minimum": 0.5216704550727866,
+          "theta2_maximum": 0.3787075168904346,
+          "theta3_maximum": 0.22569607707052308,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.25443803453935776
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06480473382640084,
+          "omega2_minimum": 0.09227727719105783,
+          "omega3_minimum": 0.5705547165287677,
+          "theta2_maximum": 0.5377799842673141,
+          "theta3_maximum": 0.3243504674238489,
+          "alpha_maximum": 0.14384201205884106,
+          "theta_rms_maximum": 0.2906704272760545
+        },
+        "minimum_physics_margin": 0.06480473382640084,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      }
+    ],
+    "COBYQA": [
+      {
+        "candidate": "COBYQA_start_1",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 833,
+        "solver_function_evaluations": 2389,
+        "solver_objective_normalized": 0.21036999525520778,
+        "design": {
+          "J1": 0.011555499288281172,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.427882193336096,
+          "k_theta2": 8.059275135737742,
+          "k_theta3": 31.8319800202095
+        },
+        "total_inertia": 0.03155549928828117,
+        "surrogate_predictions": {
+          "omega1": 13.979887008666992,
+          "omega2": 42.148475646972656,
+          "omega3": 81.66761779785156,
+          "theta2_max": 0.0032366071827709675,
+          "theta3_max": 0.004491593688726425,
+          "alpha_max": 16.39959144592285,
+          "theta_rms": 0.0010476792231202126
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.0010646914066975155,
+          "omega2_minimum": 0.0881621457857189,
+          "omega3_minimum": 0.4730972374667133,
+          "theta2_maximum": 0.41536309100761726,
+          "theta3_maximum": 0.2539551355027968,
+          "alpha_maximum": -0.06164228265935723,
+          "theta_rms_maximum": 0.29477744068475376
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06517626496975026,
+          "omega2_minimum": 0.12260508820462768,
+          "omega3_minimum": 0.5177585643128839,
+          "theta2_maximum": 0.5736167882301423,
+          "theta3_maximum": 0.36355820186479915,
+          "alpha_maximum": 0.08014718551272082,
+          "theta_rms_maximum": 0.33993885338310004
+        },
+        "minimum_physics_margin": 0.06517626496975026,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed"
+      },
+      {
+        "candidate": "COBYQA_start_2",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 84,
+        "solver_function_evaluations": 206,
+        "solver_objective_normalized": 0.19999999999999996,
+        "design": {
+          "J1": 0.01,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.197000379724454,
+          "k_theta2": 6.392892076779519,
+          "k_theta3": 48.67744783092363
+        },
+        "total_inertia": 0.03,
+        "surrogate_predictions": {
+          "omega1": 13.626775741577148,
+          "omega2": 44.302242279052734,
+          "omega3": 97.43165588378906,
+          "theta2_max": 0.0022392470855265856,
+          "theta3_max": 0.003392362967133522,
+          "alpha_max": 18.24191665649414,
+          "theta_rms": 0.0009332583285868168
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.027270947816718905,
+          "omega2_minimum": 0.14520924615663233,
+          "omega3_minimum": 0.7620467563068387,
+          "theta2_maximum": 0.5578694125358393,
+          "theta3_maximum": 0.40814426482642396,
+          "alpha_maximum": -0.16213274869051864,
+          "theta_rms_maximum": 0.3665895212758532
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.012260741214950688,
+          "omega2_minimum": 0.1410767878507866,
+          "omega3_minimum": 0.8413612923324023,
+          "theta2_maximum": 0.7281172968739338,
+          "theta3_maximum": 0.5497623815672176,
+          "alpha_maximum": 0.04055132055432853,
+          "theta_rms_maximum": 0.44568600725004925
+        },
+        "minimum_physics_margin": 0.012260741214950688,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed"
+      },
+      {
+        "candidate": "COBYQA_start_3",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 103,
+        "solver_function_evaluations": 246,
+        "solver_objective_normalized": 0.19999999999999996,
+        "design": {
+          "J1": 0.01,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 9.247429933416335,
+          "k_theta2": 9.902802848552891,
+          "k_theta3": 47.053155118970004
+        },
+        "total_inertia": 0.03,
+        "surrogate_predictions": {
+          "omega1": 13.835138320922852,
+          "omega2": 46.191158294677734,
+          "omega3": 97.9013442993164,
+          "theta2_max": 0.0030457335524260998,
+          "theta3_max": 0.004619132727384567,
+          "alpha_max": 19.6589298248291,
+          "theta_rms": 0.0010576427448540926
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.011807257786126901,
+          "omega2_minimum": 0.1952412133765511,
+          "omega3_minimum": 0.7706559870719225,
+          "theta2_maximum": 0.44263578721066155,
+          "theta3_maximum": 0.23606523037262128,
+          "alpha_maximum": -0.2394243760542436,
+          "theta_rms_maximum": 0.28852420146090096
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.05989455216017037,
+          "omega2_minimum": 0.21749843399128,
+          "omega3_minimum": 0.832887191727653,
+          "theta2_maximum": 0.5834972808654768,
+          "theta3_maximum": 0.34304888531765154,
+          "alpha_maximum": -0.04455815174377609,
+          "theta_rms_maximum": 0.34611377841374336
+        },
+        "minimum_physics_margin": -0.04455815174377609,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": false,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+      },
+      {
+        "candidate": "COBYQA_start_4",
+        "solver_success": false,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 101,
+        "solver_function_evaluations": 201,
+        "solver_objective_normalized": 0.19999999999999996,
+        "design": {
+          "J1": 0.01,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 6.181672341608155,
+          "k_theta2": 11.241903405703571,
+          "k_theta3": 22.252889668195408
+        },
+        "total_inertia": 0.03,
+        "surrogate_predictions": {
+          "omega1": 12.135308265686035,
+          "omega2": 42.417755126953125,
+          "omega3": 73.97219848632812,
+          "theta2_max": 0.004082604311406612,
+          "theta3_max": 0.0059899501502513885,
+          "alpha_max": 16.80832862854004,
+          "theta_rms": 0.0011103219585493207
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.1379606446438244,
+          "omega2_minimum": 0.09529458682806036,
+          "omega3_minimum": 0.3320427883962507,
+          "theta2_maximum": 0.29448404325104427,
+          "theta3_maximum": 0.043780625565358555,
+          "alpha_maximum": -0.08393703807484032,
+          "theta_rms_maximum": 0.2554620238334281
+        },
+        "physics_margins": {
+          "omega1_minimum": -0.06886154475385431,
+          "omega2_minimum": 0.1393508613233132,
+          "omega3_minimum": 0.3356024780440612,
+          "theta2_maximum": 0.4143537756246314,
+          "theta3_maximum": 0.11313995518952102,
+          "alpha_maximum": 0.04962314105572396,
+          "theta_rms_maximum": 0.27980749011813866
+        },
+        "minimum_physics_margin": -0.06886154475385431,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": false,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+      },
+      {
+        "candidate": "COBYQA_start_5",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 930,
+        "solver_function_evaluations": 2420,
+        "solver_objective_normalized": 0.37001228425949195,
+        "design": {
+          "J1": 0.01,
+          "J2": 0.035501842638923795,
+          "J3": 0.01,
+          "k_theta1": 22.17424811762963,
+          "k_theta2": 44.544233941537044,
+          "k_theta3": 26.208311528704776
+        },
+        "total_inertia": 0.0555018426389238,
+        "surrogate_predictions": {
+          "omega1": 17.018291473388672,
+          "omega2": 56.70581817626953,
+          "omega3": 87.01333618164062,
+          "theta2_max": 0.002780129900202155,
+          "theta3_max": 0.0036950355861335993,
+          "alpha_max": 65.33090209960938,
+          "theta_rms": 0.000884895387571305
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 0.22443138844393706,
+          "omega2_minimum": 0.4737443941282533,
+          "omega3_minimum": 0.5710824584126446,
+          "theta2_maximum": 0.4805861719989364,
+          "theta3_maximum": 0.36568836664510707,
+          "alpha_maximum": -2.7306228637695313,
+          "theta_rms_maximum": 0.39694274856000833
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.25958926669818094,
+          "omega2_minimum": 0.516964153627111,
+          "omega3_minimum": 0.6102482809433267,
+          "theta2_maximum": 0.6125457057625867,
+          "theta3_maximum": 0.5064801795398908,
+          "alpha_maximum": -2.6391899305000006,
+          "theta_rms_maximum": 0.44578571127911126
+        },
+        "minimum_physics_margin": -2.6391899305000006,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": false,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+      },
+      {
+        "candidate": "COBYQA_start_6",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 553,
+        "solver_function_evaluations": 1472,
+        "solver_objective_normalized": 0.2185680935605256,
+        "design": {
+          "J1": 0.012785214034078845,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.702603174960187,
+          "k_theta2": 8.0674453711525,
+          "k_theta3": 25.562822982051173
+        },
+        "total_inertia": 0.032785214034078844,
+        "surrogate_predictions": {
+          "omega1": 13.99252700805664,
+          "omega2": 40.372318267822266,
+          "omega3": 74.95552825927734,
+          "theta2_max": 0.003600016236305237,
+          "theta3_max": 0.004988004919141531,
+          "alpha_max": 15.3143310546875,
+          "theta_rms": 0.001104495138861239
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.0001266101391196317,
+          "omega2_minimum": 0.041116831417062016,
+          "omega3_minimum": 0.3500668925760235,
+          "theta2_maximum": 0.363437926192715,
+          "theta3_maximum": 0.18432351595229945,
+          "alpha_maximum": -0.0024462613192473004,
+          "theta_rms_maximum": 0.25911901364054934
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06192211167413597,
+          "omega2_minimum": 0.07277210967022807,
+          "omega3_minimum": 0.37417601568695935,
+          "theta2_maximum": 0.5102067704828004,
+          "theta3_maximum": 0.30301581658527843,
+          "alpha_maximum": 0.15655202841419313,
+          "theta_rms_maximum": 0.2881241353367219
+        },
+        "minimum_physics_margin": 0.06192211167413597,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed"
+      },
+      {
+        "candidate": "COBYQA_start_7",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 1208,
+        "solver_function_evaluations": 3425,
+        "solver_objective_normalized": 0.21622847823899566,
+        "design": {
+          "J1": 0.012434271735849352,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.49784489300334,
+          "k_theta2": 7.8958401055279115,
+          "k_theta3": 39.791572076517696
+        },
+        "total_inertia": 0.032434271735849354,
+        "surrogate_predictions": {
+          "omega1": 14.006994247436523,
+          "omega2": 41.478302001953125,
+          "omega3": 89.55230712890625,
+          "theta2_max": 0.0032372171990573406,
+          "theta3_max": 0.00437359930947423,
+          "alpha_max": 15.45446491241455,
+          "theta_rms": 0.0010831078980118036
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 0.0009470802810671586,
+          "omega2_minimum": 0.07041116820814985,
+          "omega3_minimum": 0.617620942369741,
+          "theta2_maximum": 0.41527592973328564,
+          "theta3_maximum": 0.27050621094546057,
+          "alpha_maximum": -0.010089926286177331,
+          "theta_rms_maximum": 0.2725419314543289
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.0607910828429048,
+          "omega2_minimum": 0.08896969103195707,
+          "omega3_minimum": 0.6812409351220214,
+          "theta2_maximum": 0.5890014210004241,
+          "theta3_maximum": 0.3758082204509243,
+          "alpha_maximum": 0.14925667861480751,
+          "theta_rms_maximum": 0.30991398232995904
+        },
+        "minimum_physics_margin": 0.0607910828429048,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed"
+      },
+      {
+        "candidate": "COBYQA_start_8",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 103,
+        "solver_function_evaluations": 171,
+        "solver_objective_normalized": 0.21417688706391855,
+        "design": {
+          "J1": 0.012126533059587781,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 14.083530928521105,
+          "k_theta2": 5.0,
+          "k_theta3": 40.80822092005398
+        },
+        "total_inertia": 0.032126533059587785,
+        "surrogate_predictions": {
+          "omega1": 13.190328598022461,
+          "omega2": 41.36255645751953,
+          "omega3": 89.64867401123047,
+          "theta2_max": 0.0024198279716074467,
+          "theta3_max": 0.0032582569401711226,
+          "alpha_max": 15.699138641357422,
+          "theta_rms": 0.0009343152050860226
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": -0.05966200077766959,
+          "omega2_minimum": 0.06734540073249162,
+          "omega3_minimum": 0.6193873149278324,
+          "theta2_maximum": 0.5320673798650006,
+          "theta3_maximum": 0.42695532162114225,
+          "alpha_maximum": -0.023435766046697504,
+          "theta_rms_maximum": 0.36592621147876314
+        },
+        "physics_margins": {
+          "omega1_minimum": -0.024932677356947486,
+          "omega2_minimum": 0.06853976664070638,
+          "omega3_minimum": 0.683463989881077,
+          "theta2_maximum": 0.7233064552452733,
+          "theta3_maximum": 0.6022508637760767,
+          "alpha_maximum": 0.14161791856459238,
+          "theta_rms_maximum": 0.43918121328552806
+        },
+        "minimum_physics_margin": -0.024932677356947486,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": false,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+      },
+      {
+        "candidate": "COBYQA_start_9",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 109,
+        "solver_function_evaluations": 280,
+        "solver_objective_normalized": 0.19999999999999996,
+        "design": {
+          "J1": 0.01,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.86177985083092,
+          "k_theta2": 10.051817347265791,
+          "k_theta3": 26.92263918545042
+        },
+        "total_inertia": 0.03,
+        "surrogate_predictions": {
+          "omega1": 14.84384536743164,
+          "omega2": 46.56415557861328,
+          "omega3": 77.4208755493164,
+          "theta2_max": 0.0032207886688411236,
+          "theta3_max": 0.004844306036829948,
+          "alpha_max": 21.112062454223633,
+          "theta_rms": 0.000985574210062623
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 0.06305423196825943,
+          "omega2_minimum": 0.2051208415488004,
+          "omega3_minimum": 0.39525587964565423,
+          "theta2_maximum": 0.41762329596108716,
+          "theta3_maximum": 0.20448016288106596,
+          "alpha_maximum": -0.31868615583939985,
+          "theta_rms_maximum": 0.3337553757987045
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.13400127117740834,
+          "omega2_minimum": 0.25853335449472725,
+          "omega3_minimum": 0.430410236108812,
+          "theta2_maximum": 0.5589746060679734,
+          "theta3_maximum": 0.33480411717469116,
+          "alpha_maximum": -0.1952871198961843,
+          "theta_rms_maximum": 0.37264192755159686
+        },
+        "minimum_physics_margin": -0.1952871198961843,
+        "in_bounds": true,
+        "surrogate_feasible": false,
+        "physics_feasible": false,
+        "improves_baseline": true,
+        "accepted_for_selection": false,
+        "rejection_reason": "surrogate_screen_failed;independent_physics_failed"
+      },
+      {
+        "candidate": "COBYQA_start_10",
+        "solver_success": true,
+        "solver_termination_status": "The lower bound for the trust-region radius has been reached",
+        "solver_iterations": 126,
+        "solver_function_evaluations": 214,
+        "solver_objective_normalized": 0.21682560160819186,
+        "design": {
+          "J1": 0.012523840241228787,
+          "J2": 0.01,
+          "J3": 0.01,
+          "k_theta1": 11.394629047955865,
+          "k_theta2": 8.091625880124043,
+          "k_theta3": 37.45486349950939
+        },
+        "total_inertia": 0.032523840241228785,
+        "surrogate_predictions": {
+          "omega1": 13.994233131408691,
+          "omega2": 41.24151611328125,
+          "omega3": 87.4065933227539,
+          "theta2_max": 0.003365729469805956,
+          "theta3_max": 0.0045152874663472176,
+          "alpha_max": 15.269482612609863,
+          "theta_rms": 0.0010994205949828029
+        },
+        "validation_allowances": {
+          "omega1": 0.5199213027954102,
+          "omega2": 1.0658035278320312,
+          "omega3": 1.3007736206054688,
+          "theta2_max": 0.0008550956845283,
+          "theta3_max": 0.000827039591968,
+          "alpha_max": 3.0638504028320312,
+          "theta_rms": 7.5978459790349e-05
+        },
+        "surrogate_margins": {
+          "omega1_minimum": 1.0306609565802205e-08,
+          "omega2_minimum": 0.06413938919723883,
+          "omega3_minimum": 0.5782907296110307,
+          "theta2_maximum": 0.39691364410924324,
+          "theta3_maximum": 0.250631608539828,
+          "alpha_maximum": 1.733953292060164e-08,
+          "theta_rms_maximum": 0.2623038651088707
+        },
+        "physics_margins": {
+          "omega1_minimum": 0.06292687614696546,
+          "omega2_minimum": 0.08829586883975815,
+          "omega3_minimum": 0.6356328159154856,
+          "theta2_maximum": 0.5639735845378778,
+          "theta3_maximum": 0.35105371079929903,
+          "alpha_maximum": 0.15130933326530804,
+          "theta_rms_maximum": 0.2982038157828065
+        },
+        "minimum_physics_margin": 0.06292687614696546,
+        "in_bounds": true,
+        "surrogate_feasible": true,
+        "physics_feasible": true,
+        "improves_baseline": true,
+        "accepted_for_selection": true,
+        "rejection_reason": null
+      }
+    ]
+  },
+  "selection": {
+    "selected_solver": "SLSQP_start_6",
+    "reason": "Lowest-inertia candidate passing surrogate and physics checks.",
+    "total_inertia": 0.0324666597163391,
+    "physics_feasible": true,
+    "improves_baseline": true
+  },
+  "baseline": {
+    "design": {
+      "J1": 0.030000000000000002,
+      "J2": 0.030000000000000002,
+      "J3": 0.030000000000000002,
+      "k_theta1": 27.5,
+      "k_theta2": 27.5,
+      "k_theta3": 27.5
+    },
+    "total_inertia": 0.09000000000000001,
+    "surrogate_outputs": {
+      "omega1": 13.362287521362305,
+      "omega2": 37.68866729736328,
+      "omega3": 54.488365173339844,
+      "theta2_max": 0.00692716334015131,
+      "theta3_max": 0.007070492021739483,
+      "alpha_max": 18.361228942871094,
+      "theta_rms": 0.0015932891983538866
+    },
+    "physics_outputs": {
+      "omega1": 13.47431168973881,
+      "omega2": 37.754182387475396,
+      "omega3": 54.55637423871151,
+      "theta2_max": 0.006998707752391627,
+      "theta3_max": 0.007129106483802307,
+      "alpha_max": 18.333333333333332,
+      "theta_rms": 0.001593337689029128
+    }
+  },
+  "selected_design": {
+    "design": {
+      "J1": 0.012466659716339036,
+      "J2": 0.010000000000000066,
+      "J3": 0.01,
+      "k_theta1": 11.25193323977067,
+      "k_theta2": 8.307161699849932,
+      "k_theta3": 34.47729239149942
+    },
+    "surrogate_outputs": {
+      "omega1": 13.994233131408691,
+      "omega2": 41.178123474121094,
+      "omega3": 84.56565856933594,
+      "theta2_max": 0.0034842020832002163,
+      "theta3_max": 0.004677684977650642,
+      "alpha_max": 15.269482612609863,
+      "theta_rms": 0.0011108573526144028
+    },
+    "physics_outputs": {
+      "omega1": 14.34516584406122,
+      "omega2": 41.23101359984672,
+      "omega3": 85.96107616940593,
+      "theta2_max": 0.0032196837095139277,
+      "theta3_max": 0.004801090370551368,
+      "alpha_max": 15.689122334819235,
+      "theta_rms": 0.001128897114191745
+    },
+    "physics_margins": {
+      "omega1_minimum": 0.06463069686784806,
+      "omega2_minimum": 0.09209128611734241,
+      "omega3_minimum": 0.5756376293131777,
+      "theta2_maximum": 0.5399602578899392,
+      "theta3_maximum": 0.3265508964609113,
+      "alpha_maximum": 0.1442296908280417,
+      "theta_rms_maximum": 0.291489103681707
+    }
+  },
+  "run_directory": "C:\\Users\\Nick\\Desktop\\Important\\Github\\Small-Projects-Public\\Computational-Methods\\Notebooks\\robotics-design-optimization-rl\\artifacts\\surrogate_optimization\\run_20261021T060101.199323Z"
+}

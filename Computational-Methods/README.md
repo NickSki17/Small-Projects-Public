@@ -1,80 +1,27 @@
 # Computational Methods
 
-A collection of computational mechanics, numerical optimization, vibration analysis, scientific machine learning, and reinforcement-learning projects.
-
-## Repository Structure
-
-```text
-Computational-Methods/
-├── README.md
-└── Notebooks/
-    ├── optimization_and_vibration_analysis(original).ipynb
-    ├── optimization-project/
-    │   ├── optimization-project-code/
-    │   ├── figures/
-    │   └── results/
-    └── robotics-design-optimization-rl/
-        ├── README.md
-        ├── requirements.txt
-        ├── .gitignore
-        ├── src/
-        ├── scripts/
-        ├── tests/
-        ├── figures/
-        ├── data/
-        └── artifacts/
-```
-
-The tree shows the intended high-level organization. Generated files and individual module contents may vary as development progresses.
+Computational engineering projects focused on numerical optimization, vibration analysis, and data-driven design. The work emphasizes transparent assumptions, reproducible computation, and validation appropriate to each model's scope.
 
 ## Projects
 
-### Project 1: Numerical Optimization and Vibration Analysis
+### Numerical Optimization and Vibration Analysis
 
-**Location:** `Notebooks/optimization-project/`
+**Location:** [`Notebooks/optimization-project/`](Notebooks/optimization-project/)
 
-A completed computational engineering project covering numerical optimization and mechanical vibration analysis.
+An implemented collection of numerical-method benchmarks and a simplified mechanical vibration study. The Python analyses compare Gradient Descent, Newton's method, and SciPy BFGS on five test functions, and examine modal frequencies and time/frequency-domain responses for an undamped fixed-fixed mass-spring chain.
 
-The cleaned Python implementation is maintained in `optimization-project-code/`. Generated figures and numerical results are stored alongside the implementation. The original exploratory Jupyter notebook is preserved in `Notebooks/` for reference.
+The scripts, assumptions, commands, and known numerical limitations are described in the [project README](Notebooks/optimization-project/optimization-project-code/README.md). An exploratory notebook is also retained at [`Notebooks/optimization_and_vibration_analysis(original).ipynb`](Notebooks/optimization_and_vibration_analysis(original).ipynb).
 
-The project covers:
+### Reduced-Order Rotational-Torsional Design Optimization
 
-- Gradient Descent, Newton's method, and BFGS optimization.
-- Convergence behavior across multiple test functions.
-- Mechanical vibration and modal analysis.
-- Frequency-domain analysis using FFT.
-- Reproducible numerical results and visualizations.
+**Location:** [`Notebooks/robotics-design-optimization-rl/`](Notebooks/robotics-design-optimization-rl/)
 
-### Project 2: Robotics Design Optimization and Reinforcement Learning
+This project studies a **reduced-order 3-DOF rotational-torsional chain**—not a full rigid-body robot manipulator. Its non-RL workflow connects physics-based dataset generation, neural-network surrogate training and selection, validation-only directional error calibration, constrained total-inertia optimization, and independent physics verification.
 
-**Location:** `Notebooks/robotics-design-optimization-rl/`
+A recorded local run reduced total inertia from `0.09` to approximately `0.0323192 kg·m²` (about 64.09%) and passed the project's independent physics checks. This is a verified result for that run, not evidence of global optimality or physical-hardware performance. The dataset is local/ignored, and a clean-checkout reproduction has not been established. See the [project README](Notebooks/robotics-design-optimization-rl/README.md) for the run evidence, reproduction steps, limitations, and current status.
 
-An in-progress computational engineering project combining a three-degree-of-freedom rotational-torsional model, numerical simulation, engineering response metrics, neural-network surrogate modeling, constrained design optimization, and planned reinforcement-learning control.
+Reinforcement learning is **not implemented**: the related files are placeholders, and there is no connected control environment, training/evaluation pipeline, or RL-versus-baseline result.
 
-The intended workflow is:
+## Engineering approach
 
-1. Define the rotational mechanical system and its physical parameters.
-2. Compute natural frequencies and simulate time-domain responses.
-3. Extract engineering response metrics and generate a reproducible dataset.
-4. Train and evaluate a PyTorch surrogate.
-5. Perform constrained design optimization and validate candidate designs using the original physics model.
-6. Develop a compatible Gymnasium control environment and compare PPO against PID.
-7. Evaluate prediction error, computational cost, control performance, and robustness.
-
-#### Current development status
-
-The rotational-torsional dataset generator, PyTorch surrogate definition, surrogate tests, and training script are implemented.
-
-The dataset generator is configured to produce 5,000 designs with a fixed random seed. A 20-design smoke test completed successfully. The full dataset must be confirmed complete and validated before baseline training results can be reported.
-
-The current neural-network architecture has two hidden layers of 64 units each. Deeper architectures may be compared experimentally, with architecture selection based on validation performance and final reporting based on a held-out test set.
-
-Constrained optimization and reinforcement-learning control are downstream stages. They should not be described as completed until the implementations, validation procedures, and numerical results are available.
-
-See the [Project 2 README](Notebooks/robotics-design-optimization-rl/README.md) for the workflow, model inputs and outputs, testing commands, implementation status, and limitations.
-
-## Engineering Approach
-
-Across these projects, the emphasis is on reproducible numerical methods, explicit model assumptions, software testing, quantitative evaluation, and validation against an appropriate reference.
-
-Predictions from a numerical model or neural network are not automatically evidence of physical accuracy. Results should be accompanied by meaningful error metrics, limitations, and enough implementation detail to reproduce the analysis.
+These projects distinguish numerical correctness from physical validation. Results should be interpreted within the equations, assumptions, discretization, data provenance, and verification methods documented for each project. Simulation and surrogate agreement alone do not establish real-world performance.

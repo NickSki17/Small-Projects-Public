@@ -1,229 +1,80 @@
-# Physics-Based Robotic Arm Optimization and Reinforcement Learning
+# Reduced-Order Rotational-Torsional Design Optimization
 
-Project 2 in the Computational Methods repository.
+This project develops and tests a physics-based design-optimization workflow for a **reduced-order 3-DOF rotational-torsional chain**. It is not a full rigid-body robot manipulator, and its simulated results are not validation against physical hardware.
 
-This project investigates how computational mechanics, numerical simulation, neural-network surrogate modeling, constrained design optimization, and reinforcement learning can be combined in a robotic-joint engineering study.
+The implemented non-RL pipeline connects mechanics simulation, synthetic data generation, neural-network surrogate selection, validation-only error calibration, constrained design optimization, and independent physics verification.
 
-The objective is to develop a reproducible pipeline that predicts the dynamic response of a mechanical system, uses a learned surrogate to accelerate design exploration, validates optimized designs against the original physics model, and ultimately compares a PPO reinforcement-learning controller with a conventional PID controller.
+## Engineering model
 
-The current physics and dataset pipeline uses a **three-degree-of-freedom rotational-torsional system** as a reduced-order model. It is not a complete six-axis robotic manipulator, and the project does not claim hardware-level validation.
+The design vector is `[J1, J2, J3, k_theta1, k_theta2, k_theta3]`. The model parameters, physical bounds, damping assumptions, and simulation settings are defined in `src/dataset_config.py`; system matrices and dynamics are in `src/dynamics.py`; modal analysis and time integration are implemented in `src/modal.py` and `src/simulation.py`. `src/metrics.py` computes the three modal frequencies (`omega1`–`omega3`, rad/s), sampled-history angular-response maxima (`theta2_max`, `theta3_max`, rad), maximum angular acceleration (`alpha_max`, rad/s²), and RMS angular response (`theta_rms`, rad).
 
-## Quick Start
+The objective is total inertia, `J1 + J2 + J3` (kg·m²). Stiffness is bounded but has no direct cost in the current formulation. That is a modeling choice, not a claim that stiffness has no engineering or economic cost; a different objective requires an explicit engineering requirement. Time-history maxima are sampled-grid values, not guaranteed continuous-time extrema.
 
-Run commands from the `robotics-design-optimization-rl/` project root.
+## Current evidence and status
 
-Run the automated tests:
+A recorded local optimization run is available at `artifacts/surrogate_optimization/run_20261021T052354.523939Z`. It selected a candidate with total inertia approximately `0.0323192 kg·m²`, compared with a `0.09 kg·m²` baseline—about a 64.09% reduction. The recorded independent-physics verification reports positive margins for all seven constraints, and the candidate is within the configured design bounds. This is evidence for that saved run only; it does not establish global optimality or physical-hardware performance.
 
-```powershell
-python -m pytest -v
-```
-
-Generate a small dataset to verify the data-generation pipeline:
+The associated verification command is:
 
 ```powershell
-python -m scripts.generate_dataset --samples 20 --output data/generator_smoke_test.csv
+python -m scripts.verify_optimization_run --run-dir artifacts/surrogate_optimization/run_20261021T052354.523939Z
 ```
 
-Generate the full dataset:
+The full test suite completed with **176 passed** after the SLSQP finite-difference regression was added. A clean-checkout end-to-end reproduction has **not** been completed. The dataset is ignored by Git, and the prior isolated reproduction attempt was interrupted during dataset generation. Treat the saved result as a local verified baseline, not a clean-checkout reproduction.
+
+An SLSQP diagnosis found that SciPy's default finite-difference step is too small for reliable differences through this float32 surrogate. The optimizer now uses an absolute step of `1e-5` in unit-scaled design coordinates. In a controlled run from the verified candidate, SLSQP then terminated successfully after 96 iterations and 1,330 function evaluations; its returned design remained inside the bounds, passed both the calibrated surrogate screen and independent physics checks, and changed inertia by only about `−9.85e−9 kg·m²` relative to the starting candidate. This controlled single-start result is not a replacement for the saved COBYQA baseline; a full multi-start comparison with the updated SLSQP step was not completed.
+
+The selected model in the existing benchmark is `MLP_very_wide_deep`, trained with seed 42 and architecture `[512, 512, 512, 256]`. The local dataset, selected model, calibration, and optimization run must remain identity-matched; do not substitute a newer diagnostic directory based on its timestamp alone.
+
+## Reproducing the workflow
+
+Run commands from this project directory so Python can resolve the `src` and `scripts` modules. The dataset and generated run outputs are local artifacts; the dataset is not committed. A fresh reproduction requires regenerating data and then training/selecting a model and calibrating that exact selected model against that exact dataset. Use unique output locations to preserve existing evidence.
+
+The following PowerShell sequence illustrates the intended order. Choose a fresh run ID and ensure output paths do not already exist:
 
 ```powershell
-python -m scripts.generate_dataset
+$RunId = Get-Date -Format 'yyyyMMddTHHmmss'
+$Dataset = "data/reproduction/full_dataset_$RunId.csv"
+$BaseModel = "artifacts/reproduction/$RunId/base_model"
+$SelectedModel = "artifacts/reproduction/$RunId/selected_model"
+$Calibration = "artifacts/validation_region_diagnostic/run_$RunId"
+
+python -m scripts.generate_dataset --samples 5000 --output $Dataset
+python -m scripts.train_surrogate --data $Dataset --output-dir $BaseModel
+python -m scripts.benchmark_surrogates --data $Dataset --baseline-model-dir $BaseModel --output-dir $SelectedModel
+python -m scripts.diagnose_validation_region --data $Dataset --model-dir $SelectedModel --output-dir $Calibration
+python -m src.optimization_adapter --dataset $Dataset --model-dir $SelectedModel --calibration-dir $Calibration --n-starts 10 --max-iterations 10000
 ```
 
-Train the neural-network surrogate after the full dataset has been generated and validated:
+Use the new run directory printed by optimization to verify the result:
 
 ```powershell
-python -m scripts.train_surrogate
+python -m scripts.verify_optimization_run --run-dir artifacts/surrogate_optimization/run_<timestamp>
+python -m pytest -q
+python -m compileall -q src scripts tests
 ```
 
-The training script defaults to `data/full_dataset.csv` and saves model weights, metadata, evaluation metrics, training history, and plots under `artifacts/surrogate/`.
+This sequence is a documented workflow, not a claim that the full sequence has already been reproduced from a clean checkout. The benchmark script refuses a non-empty default output directory unless explicitly directed otherwise; prefer a new output directory rather than replacing prior evidence. The generator, model fitting, and benchmark may take substantial time. Do not regenerate or retrain merely to verify an existing local run.
 
-The full dataset can take substantial time to generate because every design requires a numerical simulation. Confirm that generation finishes successfully before starting model training.
+## Calibration and acceptance
 
-## Project Workflow
+For residual `e = prediction − actual`, dangerous frequency error is overprediction, while dangerous response error is underprediction. The directional allowance is therefore `max(e, 0)` for each frequency and `max(−e, 0)` for each response. The surrogate screen uses the baseline-relative forms:
 
-1. Define the rotational-torsional mechanical model and its physical parameters.
-2. Compute natural frequencies and simulate time-domain responses.
-3. Extract engineering response metrics.
-4. Generate and validate a reproducible synthetic dataset.
-5. Train and evaluate a neural-network surrogate.
-6. Perform constrained design optimization using the surrogate.
-7. Validate candidate designs with the original physics model.
-8. Develop a compatible control environment.
-9. Compare PPO against a conventional PID controller.
-10. Evaluate predictive accuracy, computational cost, control performance, and robustness.
+```text
+frequency: (prediction − allowance) / physical_baseline − 1 ≥ −1e−5
+response:  1 − (prediction + allowance) / physical_baseline ≥ −1e−5
+```
 
-**Core principle:** the original physics model remains the reference for engineering validation. Surrogate predictions and learned-controller performance must be assessed using explicit metrics rather than assumed to be accurate.
+The baseline is independently evaluated using the physics model at the configured baseline design. The low-inertia allowance applies when candidate total inertia is at or below the validation-set 10th-percentile cutoff; the global validation allowance applies otherwise. In the recorded split there were 750 validation rows and 75 in the low-inertia subset. These observed directional maxima are empirical safeguards, not confidence bounds or guarantees about unseen designs. The test partition must not be used to estimate or tune allowances.
 
-## Mechanical Model
+The optimization workflow keeps solver termination, design-bound checks, calibrated surrogate screening, independent physical feasibility, and objective improvement distinct. Solver success does not establish physical feasibility; solver failure alone does not disqualify a candidate that satisfies the documented acceptance checks. If no feasible candidate improves on the feasible baseline, the baseline is retained. Local solver termination is not proof of a global optimum.
 
-The current application is a three-degree-of-freedom rotational-torsional system. Its design variables include three rotational inertias and three torsional stiffnesses.
+## Tests and artifacts
 
-The general matrix equation of motion is
+Run tests from the project directory with `python -m pytest -q`. New optimization runs are written to timestamped directories under `artifacts/surrogate_optimization/`; the directory contains a JSON summary, design comparison, independent physics verification, and run manifest. The verifier checks consistency of the saved run and its recorded inputs. Keep each dataset, selected checkpoint and metadata, calibration directory, and optimization run together when preserving evidence.
 
-\[
-\mathbf{J}\ddot{\boldsymbol{\theta}}
-+\mathbf{C}\dot{\boldsymbol{\theta}}
-+\mathbf{K}\boldsymbol{\theta}
-=\boldsymbol{\tau}
-\]
+`data/full_dataset.csv` is ignored by Git. Run manifests can record file hashes and available configuration/runtime details, but hashes do not make unavailable inputs reproducible. The dependency file constrains supported package versions; it is not a platform-specific lockfile. Exact bitwise training reproducibility across hardware and library builds is not claimed.
 
-where:
+## Reinforcement-learning status
 
-- \(\mathbf{J}\) is the rotational inertia matrix.
-- \(\mathbf{C}\) is the damping matrix.
-- \(\mathbf{K}\) is the torsional stiffness matrix.
-- \(\boldsymbol{\theta}\) contains angular displacements in radians.
-- \(\boldsymbol{\tau}\) represents applied joint torques.
-
-The precise matrix definitions, parameter ranges, damping assumptions, initial conditions, and applied inputs are determined by the implementation. They should be documented alongside the corresponding source code.
-
-This is a reduced-order engineering model. It does not represent the full dynamics of a six-joint manipulator, including all actuator, transmission, gravity, and inter-joint effects.
-
-## Synthetic Dataset
-
-The dataset generator samples physical design parameters, runs the numerical model, and extracts response quantities.
-
-The current generator configuration reported in the console is:
-
-| Setting | Value |
-|---|---:|
-| Number of designs | 5,000 |
-| Random seed | 42 |
-| Output time interval | 0.002 s |
-| Simulation duration | 8.0 s |
-| Input variables | 6 |
-| Surrogate target variables | 7 |
-
-The default output file is `data/full_dataset.csv`.
-
-### Surrogate inputs
-
-- `J1`, `J2`, `J3`
-- `k_theta1`, `k_theta2`, `k_theta3`
-
-### Surrogate targets
-
-- `omega1`, `omega2`, `omega3`: natural angular frequencies in rad/s
-- `theta2_max`, `theta3_max`: peak absolute angular responses in rad
-- `alpha_max`: peak angular acceleration in rad/s²
-- `theta_rms`: angular-response RMS metric in rad
-
-The dataset also contains diagnostic quantities, including `theta_max` and `theta1_max`. The generator's pilot run found that `theta1_max` was constant across the tested samples, so it is not included as a surrogate target. Constant targets provide no useful regression signal.
-
-The dataset should be checked for missing values, non-finite values, duplicate or constant targets, and physically invalid samples before training.
-
-## Neural-Network Surrogate
-
-The surrogate is implemented in `src/surrogate.py` using PyTorch.
-
-The current default architecture is a fully connected multilayer perceptron:
-
-\[
-6 \rightarrow 64 \rightarrow 64 \rightarrow 7
-\]
-
-It uses ReLU activations in its hidden layers. Input and output normalization parameters are stored with the model, allowing inference to return predictions in the original physical units.
-
-The training workflow is implemented in `scripts/train_surrogate.py`. It includes:
-
-- Reproducible random seeds.
-- A 70% training, 15% validation, and 15% test split.
-- Normalization fitted using training data only.
-- AdamW optimization and mean-squared-error loss.
-- Validation-based early stopping.
-- Per-target MAE, RMSE, and \(R^2\) evaluation.
-- Training-history and actual-versus-predicted plots.
-- Saved model weights and training metadata.
-
-The held-out test set is intended for final evaluation, not repeated architecture selection. Deeper networks may be evaluated against the current two-hidden-layer baseline, but any improvement must be demonstrated experimentally.
-
-A successful software test does not establish predictive accuracy. Model performance must be reported using the completed dataset and held-out results.
-
-## Constrained Design Optimization
-
-The next stage will use SciPy to formulate a clearly defined engineering design problem.
-
-The objective and constraints must be compatible with the actual parameterization and physical model. Potential criteria include reducing total rotational inertia or another justified design cost while maintaining specified natural-frequency and dynamic-response requirements.
-
-The optimized candidate must be simulated using the original physics model. Surrogate predictions alone are insufficient to establish feasibility.
-
-Optimization results should report:
-
-- Baseline and optimized design variables.
-- Objective value and constraint satisfaction.
-- Predicted versus physics-calculated responses.
-- Computational cost and any relevant model errors.
-
-## Reinforcement Learning: PPO versus PID
-
-The planned control stage will use Gymnasium and Stable-Baselines3 to compare PPO with a conventional PID baseline on a consistent rotational-system control task.
-
-Both controllers must use the same plant model, command profile, actuator limits, and evaluation conditions.
-
-Planned evaluation metrics include:
-
-- Position-tracking RMSE.
-- Settling time and overshoot.
-- Peak control torque and control effort.
-- Performance under selected parameter perturbations.
-
-PPO is not assumed to outperform PID. The objective is a fair quantitative comparison, including cases in which the conventional controller performs better.
-
-The control environment and its final actuation and observation definitions must be documented before results are presented.
-
-## Implementation Status
-
-### Implemented components
-
-- Rotational-torsional dataset generation through `scripts/generate_dataset.py`.
-- Neural-network model definition in `src/surrogate.py`.
-- Surrogate unit tests in `tests/test_surrogate.py`.
-- Training and evaluation workflow in `scripts/train_surrogate.py`.
-- Dataset validation and pilot CSV generation.
-
-The 20-design smoke test completed successfully and reported no missing values in the generated CSV. The full 5,000-design dataset was shown in progress in the latest console output; verify its completion before training.
-
-### Remaining work
-
-- [ ] Complete and validate the full dataset.
-- [ ] Run the full test suite against the current code.
-- [ ] Train the baseline neural network and inspect held-out metrics.
-- [ ] Compare two-, three-, and four-hidden-layer architectures if useful.
-- [ ] Establish surrogate inference speed versus numerical simulation.
-- [ ] Implement and test constrained optimization.
-- [ ] Validate the optimized candidate using the original physics model.
-- [ ] Implement and test the control environment and PID baseline.
-- [ ] Train PPO and compare both controllers under identical conditions.
-- [ ] Produce final figures, numerical results, and limitations.
-
-## Reproducibility and Data Management
-
-- Use fixed seeds for dataset generation, data splitting, and training.
-- Record model parameters, units, solver settings, and evaluation conditions.
-- Keep the physics implementation independent of the surrogate.
-- Retain a held-out test set for final evaluation.
-- Document how datasets and model checkpoints can be regenerated.
-- Avoid committing large generated datasets and checkpoints unless there is a clear portfolio benefit.
-- Distinguish numerical verification from validation against physical hardware.
-
-## Limitations
-
-The model is a simplified rotational-torsional system, not a complete robotic manipulator. The dataset is synthetic, and the surrogate's accuracy depends on its coverage of the parameter space. Optimization results depend on the selected objective and constraints. Reinforcement-learning results depend on the environment, reward formulation, training budget, and evaluation protocol.
-
-No claims about full-robot performance or real-hardware validation should be made without additional evidence.
-
-## Technology Stack
-
-- Python
-- NumPy
-- SciPy
-- Pandas
-- Matplotlib
-- PyTorch
-- scikit-learn
-- Gymnasium
-- Stable-Baselines3
-- pytest
-
-The intended outcome is a reproducible portfolio project demonstrating numerical mechanics, scientific machine learning, constrained design optimization, and data-driven control in a robotic-joint application.
+Reinforcement learning is not implemented. `src/environment.py`, `src/controllers.py`, and `scripts/train_rl.py` are placeholders; there is no executable state/action interface, reward definition, training/evaluation protocol, checkpoint workflow, or RL-versus-controller comparison. Defining the control objective and safety/evaluation requirements is a prerequisite to that work.

@@ -12,7 +12,10 @@ The test set is evaluated only after candidate selection.
 from __future__ import annotations
 
 import json
+import argparse
+import hashlib
 import random
+import subprocess
 import time
 from pathlib import Path
 
@@ -41,8 +44,10 @@ from scripts.train_surrogate import (
 from src.surrogate import SurrogateMLP
 
 
-ARTIFACT_DIR = Path("artifacts/surrogate")
-OUTPUT_DIR = Path("artifacts/surrogate_benchmark")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+ARTIFACT_DIR = PROJECT_ROOT / "artifacts/surrogate"
+DATA_PATH = PROJECT_ROOT / "data/full_dataset.csv"
+OUTPUT_DIR = PROJECT_ROOT / "artifacts/surrogate_benchmark"
 PLOT_DIR = OUTPUT_DIR / "plots"
 DEVICE = torch.device("cpu")
 DEFAULT_SEED = 42
@@ -81,6 +86,22 @@ def load_existing_mlp():
     model.eval()
 
     return model, metadata
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _git_revision() -> str | None:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT,
+                                       text=True, stderr=subprocess.DEVNULL).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
 
 
 def predict_mlp(
@@ -160,6 +181,8 @@ def save_selected_model(
     mlp_architectures: dict,
     seed: int,
     validation_score: float,
+    dataset: pd.DataFrame,
+    validation_df: pd.DataFrame,
 ) -> dict:
     """Save the selected model and metadata for later inference."""
     metadata = {
@@ -172,6 +195,14 @@ def save_selected_model(
         "output_dim": len(TARGET_COLUMNS),
         "selection_metric": "validation_mean_NRMSE",
         "validation_mean_NRMSE": validation_score,
+        "dataset_sha256": _sha256_file(DATA_PATH),
+        "dataset_rows": int(len(dataset)),
+        "validation_rows": int(len(validation_df)),
+        "validation_design_ids_sha256": hashlib.sha256(
+            ",".join(map(str, validation_df["design_id"].tolist())).encode("utf-8")
+        ).hexdigest(),
+        "source_revision": _git_revision(),
+        "python_version": __import__("sys").version,
     }
 
     if selected_name in candidates:
@@ -199,6 +230,7 @@ def save_selected_model(
         metadata["hidden_dims"] = hidden_dims
 
     metadata_path = OUTPUT_DIR / "selected_model_metadata.json"
+    metadata["checkpoint_sha256"] = _sha256_file(model_path)
     metadata_path.write_text(
         json.dumps(metadata, indent=2),
         encoding="utf-8",
@@ -376,10 +408,25 @@ def generate_benchmark_plots(
 
 
 def main() -> None:
+    global ARTIFACT_DIR, DATA_PATH, OUTPUT_DIR, PLOT_DIR
+    parser = argparse.ArgumentParser(description="Benchmark surrogates using a validation-only selection split.")
+    parser.add_argument("--data", type=Path, default=DATA_PATH)
+    parser.add_argument("--baseline-model-dir", type=Path, default=ARTIFACT_DIR)
+    parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
+    parser.add_argument("--overwrite", action="store_true", help="Allow replacing files in the selected output directory.")
+    args = parser.parse_args()
+    DATA_PATH = args.data if args.data.is_absolute() else PROJECT_ROOT / args.data
+    ARTIFACT_DIR = args.baseline_model_dir if args.baseline_model_dir.is_absolute() else PROJECT_ROOT / args.baseline_model_dir
+    OUTPUT_DIR = args.output_dir if args.output_dir.is_absolute() else PROJECT_ROOT / args.output_dir
+    PLOT_DIR = OUTPUT_DIR / "plots"
+    if OUTPUT_DIR.exists() and any(OUTPUT_DIR.iterdir()) and not args.overwrite:
+        raise FileExistsError(f"Benchmark output directory is not empty: {OUTPUT_DIR}. Choose a new directory or pass --overwrite.")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    data = load_dataset(Path("data/full_dataset.csv"))
+    data = load_dataset(DATA_PATH)
     existing_mlp, existing_metadata = load_existing_mlp()
+    if existing_metadata.get("dataset_sha256") and existing_metadata["dataset_sha256"] != _sha256_file(DATA_PATH):
+        raise ValueError("Baseline model was trained with a different dataset fingerprint.")
     seed = int(existing_metadata["seed"])
 
     train_df, validation_df, test_df = split_dataset(data, seed)
@@ -538,6 +585,8 @@ def main() -> None:
         mlp_architectures=mlp_architectures,
         seed=seed,
         validation_score=validation_score,
+        dataset=data,
+        validation_df=validation_df,
     )
 
     # Evaluate the test partition only after model selection.

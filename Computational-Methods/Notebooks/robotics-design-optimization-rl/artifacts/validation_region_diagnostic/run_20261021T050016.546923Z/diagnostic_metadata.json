@@ -1,0 +1,58 @@
+{
+  "model": "MLP_very_wide_deep",
+  "model_type": "pytorch",
+  "model_file": "selected_model_state.pt",
+  "seed": 42,
+  "dataset_rows": 5000,
+  "validation_rows": 750,
+  "low_inertia_fraction": 0.1,
+  "low_inertia_cutoff": 0.06388300069061098,
+  "low_inertia_validation_rows": 75,
+  "inertia_definition": "J1 + J2 + J3",
+  "error_sign_convention": "prediction - actual",
+  "input_columns": [
+    "J1",
+    "J2",
+    "J3",
+    "k_theta1",
+    "k_theta2",
+    "k_theta3"
+  ],
+  "target_columns": [
+    "omega1",
+    "omega2",
+    "omega3",
+    "theta2_max",
+    "theta3_max",
+    "alpha_max",
+    "theta_rms"
+  ],
+  "target_units": {
+    "omega1": "rad/s",
+    "omega2": "rad/s",
+    "omega3": "rad/s",
+    "theta2_max": "rad",
+    "theta3_max": "rad",
+    "alpha_max": "rad/s^2",
+    "theta_rms": "rad"
+  },
+  "test_partition_evaluated": false,
+  "dataset_sha256": "df6b64e9f43d4e341e67094f2713d2ef5459a134cdbf74cc2ec7a12aae4641a7",
+  "checkpoint_sha256": "104b2a43ed18ab99c10b8273cc2278d2637586a7f111825711669a53ebb7279e",
+  "model_metadata_sha256": "385242f0c21af87eac201813e4f16ddee50d38ebdceed4d31b7c7d019c6995fc",
+  "diagnostic_source_sha256": "a05f33b2bf8d15f709410281f845ad1e4d9e049fbbbfab1df44ca48abf17e805",
+  "validation_design_ids_sha256": "d48a933376495584f31060b580ce52a586089b2a3413e32867772e2eb7ee276f",
+  "split": {
+    "method": "two-stage sklearn train_test_split",
+    "seed": 42,
+    "train_fraction": 0.7,
+    "validation_fraction": 0.15,
+    "test_fraction": 0.15
+  },
+  "source_revision": "1e87ce4a8ff7822b4396dc4bb256a0a8bb3991c6",
+  "source_tree_dirty": true,
+  "note": "These are empirical validation errors, not formal guarantees for unseen designs.",
+  "error_summary_sha256": "f00f109264755e32d87b4ccbcb568ffd3e86020ab880595f775ff63983207ef2",
+  "constraint_direction_sha256": "392eeaef4d6e46eec81c73b4844716ded0fa172a9c3ac7042da25f37fa15d80c",
+  "validation_predictions_sha256": "368a90fb2d97ed6ccc8861df2e5d8903d94e418f788eee154147571632e107d8"
+}

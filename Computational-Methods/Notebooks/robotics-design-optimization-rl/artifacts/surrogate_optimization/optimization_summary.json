@@ -4,42 +4,60 @@
   "configuration": {
     "n_starts": 5,
     "seed": 42,
-    "max_iterations": 5000,
+    "max_iterations": 50000,
     "tolerance": 1e-09,
     "physics_feasibility_tolerance": 1e-06
   },
   "solver_runs": {
     "SLSQP": {
       "completed": true,
-      "solver_success": false,
-      "solver_message": "Iteration limit reached",
-      "iterations": 5000,
-      "function_evaluations": 78338,
+      "solver_success": true,
+      "solver_message": "Optimization terminated successfully",
+      "iterations": 11240,
+      "function_evaluations": 176387,
       "surrogate_feasible": true,
       "design": {
-        "J1": 0.02520000282675759,
-        "J2": 0.01,
-        "J3": 0.02077124128464368,
+        "J1": 0.025200002825691556,
+        "J2": 0.012321569461108838,
+        "J3": 0.02077121476908255,
         "k_theta1": 36.381561307671376,
         "k_theta2": 9.237980654944229,
         "k_theta3": 48.90300582365402
       },
-      "total_inertia": 0.05597124411140127,
-      "minimum_physics_margin": 0.012564137546775989,
+      "total_inertia": 0.05829278705588294,
+      "minimum_physics_margin": 0.012564137505004624,
       "in_bounds": true,
       "physics_feasible": true,
       "improves_baseline": true,
       "accepted_for_selection": true
     },
     "COBYQA": {
-      "completed": false,
-      "error": "ValueError: scaled_design must lie between zero and one."
+      "completed": true,
+      "solver_success": true,
+      "solver_message": "The lower bound for the trust-region radius has been reached",
+      "iterations": 34,
+      "function_evaluations": 44,
+      "surrogate_feasible": true,
+      "design": {
+        "J1": 0.01,
+        "J2": 0.01,
+        "J3": 0.01,
+        "k_theta1": 12.64907755485307,
+        "k_theta2": 5.094372070784176,
+        "k_theta3": 49.34687798545403
+      },
+      "total_inertia": 0.03,
+      "minimum_physics_margin": -0.03024900751074655,
+      "in_bounds": true,
+      "physics_feasible": false,
+      "improves_baseline": true,
+      "accepted_for_selection": false
     }
   },
   "selection": {
     "selected_solver": "SLSQP",
     "reason": "Lowest-inertia candidate passing surrogate and physics checks.",
-    "total_inertia": 0.05597124411140127,
+    "total_inertia": 0.05829278705588294,
     "physics_feasible": true,
     "improves_baseline": true
   },
@@ -74,39 +92,39 @@
   },
   "selected_design": {
     "design": {
-      "J1": 0.02520000282675759,
-      "J2": 0.01,
-      "J3": 0.02077124128464368,
+      "J1": 0.025200002825691556,
+      "J2": 0.012321569461108838,
+      "J3": 0.02077121476908255,
       "k_theta1": 36.381561307671376,
       "k_theta2": 9.237980654944229,
       "k_theta3": 48.90300582365402
     },
     "surrogate_outputs": {
-      "omega1": 14.711080551147461,
-      "omega2": 42.954795837402344,
-      "omega3": 88.12712860107422,
-      "theta2_max": 0.0022280439734458923,
-      "theta3_max": 0.003311809152364731,
-      "alpha_max": 18.361289978027344,
-      "theta_rms": 0.0012485922779887915
+      "omega1": 14.269427299499512,
+      "omega2": 42.8220329284668,
+      "omega3": 82.3856201171875,
+      "theta2_max": 0.0020796542521566153,
+      "theta3_max": 0.0031296424567699432,
+      "alpha_max": 18.29606056213379,
+      "theta_rms": 0.0012216561008244753
     },
     "physics_outputs": {
-      "omega1": 14.710023039794793,
-      "omega2": 42.768892089579,
-      "omega3": 89.06849095854602,
-      "theta2_max": 0.0022155271861867814,
-      "theta3_max": 0.003147934382470584,
-      "alpha_max": 18.10299081164244,
-      "theta_rms": 0.0012529677213234606
+      "omega1": 14.261754027145933,
+      "omega2": 42.76399997403278,
+      "omega3": 82.77161849538189,
+      "theta2_max": 0.00219424379520731,
+      "theta3_max": 0.0031020992825057142,
+      "alpha_max": 18.102990812408247,
+      "theta_rms": 0.001243362401035112
     },
     "physics_margins": {
-      "omega1_minimum": 0.09170868082241435,
-      "omega2_minimum": 0.13282527616773887,
-      "omega3_minimum": 0.6325954978024508,
-      "theta2_maximum": 0.6834376767011479,
-      "theta3_maximum": 0.5584391410588618,
-      "alpha_maximum": 0.012564137546775989,
-      "theta_rms_maximum": 0.21362073466866005
+      "omega1_minimum": 0.05844026437408223,
+      "omega2_minimum": 0.13269569805912007,
+      "omega3_minimum": 0.5171759423237059,
+      "theta2_maximum": 0.6864787225245284,
+      "theta3_maximum": 0.5648684320322832,
+      "alpha_maximum": 0.012564137505004624,
+      "theta_rms_maximum": 0.21964916188436312
     }
   }
 }

@@ -1,0 +1,76 @@
+{
+  "dataset_sha256": "df6b64e9f43d4e341e67094f2713d2ef5459a134cdbf74cc2ec7a12aae4641a7",
+  "checkpoint_sha256": "104b2a43ed18ab99c10b8273cc2278d2637586a7f111825711669a53ebb7279e",
+  "model_metadata_sha256": "385242f0c21af87eac201813e4f16ddee50d38ebdceed4d31b7c7d019c6995fc",
+  "calibration_metadata_sha256": "54a482dd1aa7436096065a8fe9b55d23a91977d545a680786adcb74c01e36c45",
+  "calibration_summary_sha256": "f00f109264755e32d87b4ccbcb568ffd3e86020ab880595f775ff63983207ef2",
+  "source_revision": "1e87ce4a8ff7822b4396dc4bb256a0a8bb3991c6",
+  "source_tree_dirty": true,
+  "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+  "dependencies": {
+    "numpy": "2.4.2",
+    "scipy": "1.17.0",
+    "pandas": "3.0.0",
+    "torch": "2.14.1",
+    "scikit-learn": "1.9.1"
+  },
+  "configuration": {
+    "solver_methods": [
+      "SLSQP",
+      "COBYQA"
+    ],
+    "n_starts": 5,
+    "seed": 42,
+    "max_iterations": 5000,
+    "tolerance": 1e-09,
+    "lower_bounds": [
+      0.01,
+      0.01,
+      0.01,
+      5.0,
+      5.0,
+      5.0
+    ],
+    "upper_bounds": [
+      0.05,
+      0.05,
+      0.05,
+      50.0,
+      50.0,
+      50.0
+    ]
+  },
+  "baseline": {
+    "design": [
+      0.030000000000000002,
+      0.030000000000000002,
+      0.030000000000000002,
+      27.5,
+      27.5,
+      27.5
+    ],
+    "total_inertia_kg_m2": 0.09000000000000001
+  },
+  "selected": {
+    "name": "COBYQA_start_2",
+    "design": [
+      0.012319200873201642,
+      0.01,
+      0.01,
+      11.379245070588183,
+      8.065708857860265,
+      37.73063050297746
+    ],
+    "total_inertia_kg_m2": 0.03231920087320164,
+    "acceptance_reason": "Lowest-inertia candidate passing surrogate and physics checks."
+  },
+  "outputs_sha256": {
+    "physics_verification.csv": "73d464c3003ba407eb1fdee940e9b8a81698b96efc6209cfda5ea6ded2bad723",
+    "design_comparison.csv": "8cf8fe570497f1037bf713f89e457897b672c7d0f30da955a9e49550d6fdb6fb",
+    "optimization_summary.json": "0b8af83a81275fe83965de3694a3cf5c01cf08d2eddd6bb0940c0eeca097c7a4"
+  },
+  "unknowns": [
+    "solver internal evaluation trace",
+    "historical provenance of pre-existing model artifacts"
+  ]
+}

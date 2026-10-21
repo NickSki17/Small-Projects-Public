@@ -1,0 +1,49 @@
+{
+  "model": "MLP_very_wide_deep",
+  "seed": 42,
+  "input_columns": [
+    "J1",
+    "J2",
+    "J3",
+    "k_theta1",
+    "k_theta2",
+    "k_theta3"
+  ],
+  "target_columns": [
+    "omega1",
+    "omega2",
+    "omega3",
+    "theta2_max",
+    "theta3_max",
+    "alpha_max",
+    "theta_rms"
+  ],
+  "target_units": {
+    "omega1": "rad/s",
+    "omega2": "rad/s",
+    "omega3": "rad/s",
+    "theta2_max": "rad",
+    "theta3_max": "rad",
+    "alpha_max": "rad/s^2",
+    "theta_rms": "rad"
+  },
+  "input_dim": 6,
+  "output_dim": 7,
+  "selection_metric": "validation_mean_NRMSE",
+  "validation_mean_NRMSE": 0.0068229855969548225,
+  "dataset_sha256": "df6b64e9f43d4e341e67094f2713d2ef5459a134cdbf74cc2ec7a12aae4641a7",
+  "dataset_rows": 5000,
+  "validation_rows": 750,
+  "validation_design_ids_sha256": "d48a933376495584f31060b580ce52a586089b2a3413e32867772e2eb7ee276f",
+  "source_revision": "1e87ce4a8ff7822b4396dc4bb256a0a8bb3991c6",
+  "python_version": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+  "model_type": "pytorch",
+  "model_file": "selected_model_state.pt",
+  "hidden_dims": [
+    512,
+    512,
+    512,
+    256
+  ],
+  "checkpoint_sha256": "104b2a43ed18ab99c10b8273cc2278d2637586a7f111825711669a53ebb7279e"
+}

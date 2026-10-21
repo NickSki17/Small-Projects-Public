@@ -1,0 +1,222 @@
+{
+  "model_directory": "artifacts\\surrogate_benchmark",
+  "objective": "minimize_total_inertia",
+  "configuration": {
+    "n_starts": 5,
+    "seed": 42,
+    "max_iterations": 50000,
+    "tolerance": 1e-09,
+    "physics_feasibility_tolerance": 1e-06,
+    "validation_allowances_empirical": {
+      "omega1": 0.5199213027954102,
+      "omega2": 1.0658035278320312,
+      "omega3": 1.3007736206054688,
+      "theta2_max": 0.0008550956845283,
+      "theta3_max": 0.000827039591968,
+      "alpha_max": 3.0638504028320312,
+      "theta_rms": 7.5978459790349e-05
+    },
+    "low_inertia_allowances_empirical": {
+      "omega1": 0.5199213027954102,
+      "omega2": 0.6138153076171875,
+      "omega3": 1.0377044677734375,
+      "theta2_max": 0.0007522446103394,
+      "theta3_max": 0.0004347460344433,
+      "alpha_max": 2.8276443481445312,
+      "theta_rms": 4.6901870518922806e-05
+    },
+    "low_inertia_cutoff_total_inertia": 0.06388300069061098,
+    "allowance_method": "directional maximum error on existing validation partition; finite-sample empirical safeguard, not a guarantee",
+    "low_inertia_definition": "J1+J2+J3 <= validation 10th percentile cutoff",
+    "surrogate_feasibility_tolerance": 1e-05
+  },
+  "solver_runs": {
+    "SLSQP": {
+      "completed": true,
+      "solver_success": false,
+      "solver_message": "No improved surrogate-feasible candidate accepted.",
+      "iterations": null,
+      "function_evaluations": null,
+      "surrogate_feasible": true,
+      "candidate_records": [
+        {
+          "candidate": "SLSQP_start_1",
+          "solver_success": false,
+          "solver_termination_status": "Positive directional derivative for linesearch",
+          "design": {
+            "J1": 0.016985247842967496,
+            "J2": 0.010000000000000535,
+            "J3": 0.010000000000000127,
+            "k_theta1": 27.5,
+            "k_theta2": 27.5,
+            "k_theta3": 27.5
+          },
+          "total_inertia": 0.03698524784296816,
+          "minimum_physics_margin": -0.7662385781683536,
+          "in_bounds": true,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_infeasible"
+        },
+        {
+          "candidate": "SLSQP_start_2",
+          "solver_success": false,
+          "solver_termination_status": "Inequality constraints incompatible",
+          "design": {
+            "J1": 0.024225423635026458,
+            "J2": 0.04996583042618678,
+            "J3": 0.011893828277265418,
+            "k_theta1": 36.381561307671376,
+            "k_theta2": 9.237980654944229,
+            "k_theta3": 48.90300582365402
+          },
+          "total_inertia": 0.08608508233847866,
+          "minimum_physics_margin": -0.19912517850862932,
+          "in_bounds": true,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_infeasible"
+        },
+        {
+          "candidate": "SLSQP_start_3",
+          "solver_success": false,
+          "solver_termination_status": "Positive directional derivative for linesearch",
+          "design": {
+            "J1": 0.015494137534065366,
+            "J2": 0.010001960676163409,
+            "J3": 0.01004144146201889,
+            "k_theta1": 14.15464974759385,
+            "k_theta2": 21.685911090466156,
+            "k_theta3": 46.70442449818708
+          },
+          "total_inertia": 0.03553753967224767,
+          "minimum_physics_margin": -0.34738702023445245,
+          "in_bounds": true,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_infeasible"
+        },
+        {
+          "candidate": "SLSQP_start_4",
+          "solver_success": false,
+          "solver_termination_status": "Positive directional derivative for linesearch",
+          "design": {
+            "J1": 0.014421271549682785,
+            "J2": 0.010000000000421304,
+            "J3": 0.01,
+            "k_theta1": 15.345151743765777,
+            "k_theta2": 29.956315415712567,
+            "k_theta3": 7.87177652468789
+          },
+          "total_inertia": 0.03442127155010409,
+          "minimum_physics_margin": -0.783477835216398,
+          "in_bounds": true,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_infeasible"
+        },
+        {
+          "candidate": "SLSQP_start_5",
+          "solver_success": false,
+          "solver_termination_status": "Positive directional derivative for linesearch",
+          "design": {
+            "J1": 0.025450448365812693,
+            "J2": 0.014779095467297176,
+            "J3": 0.017912580672663443,
+            "k_theta1": 20.953668565844076,
+            "k_theta2": 48.68141109777065,
+            "k_theta3": 49.99992309856323
+          },
+          "total_inertia": 0.05814212450577331,
+          "minimum_physics_margin": -0.796692972257828,
+          "in_bounds": true,
+          "physics_feasible": false,
+          "improves_baseline": true,
+          "accepted_for_selection": false,
+          "rejection_reason": "surrogate_infeasible"
+        }
+      ]
+    },
+    "COBYQA": {
+      "completed": false,
+      "error": "ValueError: design falls outside the configured bounds."
+    }
+  },
+  "selection": {
+    "selected_solver": "BASELINE",
+    "reason": "Neither solver produced a lower-inertia candidate that passed all acceptance checks; retained baseline.",
+    "total_inertia": 0.09000000000000001,
+    "physics_feasible": true,
+    "improves_baseline": false
+  },
+  "baseline": {
+    "design": {
+      "J1": 0.030000000000000002,
+      "J2": 0.030000000000000002,
+      "J3": 0.030000000000000002,
+      "k_theta1": 27.5,
+      "k_theta2": 27.5,
+      "k_theta3": 27.5
+    },
+    "total_inertia": 0.09000000000000001,
+    "surrogate_outputs": {
+      "omega1": 13.362287521362305,
+      "omega2": 37.68866729736328,
+      "omega3": 54.488365173339844,
+      "theta2_max": 0.00692716334015131,
+      "theta3_max": 0.007070492021739483,
+      "alpha_max": 18.361228942871094,
+      "theta_rms": 0.0015932891983538866
+    },
+    "physics_outputs": {
+      "omega1": 13.47431168973881,
+      "omega2": 37.754182387475396,
+      "omega3": 54.55637423871151,
+      "theta2_max": 0.006998707752391627,
+      "theta3_max": 0.007129106483802307,
+      "alpha_max": 18.333333333333332,
+      "theta_rms": 0.001593337689029128
+    }
+  },
+  "selected_design": {
+    "design": {
+      "J1": 0.030000000000000002,
+      "J2": 0.030000000000000002,
+      "J3": 0.030000000000000002,
+      "k_theta1": 27.5,
+      "k_theta2": 27.5,
+      "k_theta3": 27.5
+    },
+    "surrogate_outputs": {
+      "omega1": 13.362287521362305,
+      "omega2": 37.68866729736328,
+      "omega3": 54.488365173339844,
+      "theta2_max": 0.00692716334015131,
+      "theta3_max": 0.007070492021739483,
+      "alpha_max": 18.361228942871094,
+      "theta_rms": 0.0015932891983538866
+    },
+    "physics_outputs": {
+      "omega1": 13.47431168973881,
+      "omega2": 37.754182387475396,
+      "omega3": 54.55637423871151,
+      "theta2_max": 0.006998707752391627,
+      "theta3_max": 0.007129106483802307,
+      "alpha_max": 18.333333333333332,
+      "theta_rms": 0.001593337689029128
+    },
+    "physics_margins": {
+      "omega1_minimum": 0.0,
+      "omega2_minimum": 0.0,
+      "omega3_minimum": 0.0,
+      "theta2_maximum": 0.0,
+      "theta3_maximum": 0.0,
+      "alpha_maximum": 0.0,
+      "theta_rms_maximum": 0.0
+    }
+  }
+}

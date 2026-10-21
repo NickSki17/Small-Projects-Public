@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
+import importlib.metadata
 import json
 import random
+import subprocess
 import time
 from pathlib import Path
 
@@ -73,6 +76,33 @@ TARGET_UNITS = {
 }
 
 DEFAULT_SEED = 42
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _git_revision() -> str | None:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT,
+                                       text=True, stderr=subprocess.DEVNULL).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
+def _software_versions() -> dict[str, str | None]:
+    versions = {}
+    for name in ("numpy", "scipy", "pandas", "scikit-learn", "torch"):
+        try:
+            versions[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            versions[name] = None
+    return versions
 
 
 def parse_args() -> argparse.Namespace:
@@ -82,13 +112,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--data",
         type=Path,
-        default=Path("data/full_dataset.csv"),
+        default=PROJECT_ROOT / "data/full_dataset.csv",
         help="Path to the generated dataset CSV.",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("artifacts/surrogate"),
+        default=PROJECT_ROOT / "artifacts/surrogate",
         help="Directory for saved model, metrics, history, and plots.",
     )
     parser.add_argument("--epochs", type=int, default=2000)
@@ -96,6 +126,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument("--overwrite", action="store_true",
+                        help="Allow replacing files in the selected output directory.")
     return parser.parse_args()
 
 
@@ -435,6 +467,9 @@ def save_plots(
 def main() -> None:
     args = parse_args()
 
+    args.data = args.data if args.data.is_absolute() else PROJECT_ROOT / args.data
+    args.output_dir = args.output_dir if args.output_dir.is_absolute() else PROJECT_ROOT / args.output_dir
+
     if args.epochs < 1 or args.patience < 1 or args.batch_size < 1:
         raise ValueError("epochs, patience, and batch_size must be positive.")
 
@@ -496,6 +531,8 @@ def main() -> None:
     y_predicted = predict(model, x_test)
     metrics = evaluate_predictions(y_test, y_predicted)
 
+    if args.output_dir.exists() and any(args.output_dir.iterdir()) and not args.overwrite:
+        raise FileExistsError(f"Training output directory is not empty: {args.output_dir}. Choose a new directory or pass --overwrite.")
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     model_path = args.output_dir / "model_state.pt"
@@ -516,10 +553,17 @@ def main() -> None:
         "hidden_dims": list(DEFAULT_HIDDEN_DIMS),
         "seed": args.seed,
         "dataset_path": str(args.data),
+        "dataset_sha256": _sha256_file(args.data),
         "dataset_rows": len(data),
         "train_rows": len(train_data),
         "validation_rows": len(validation_data),
         "test_rows": len(test_data),
+        "split_design_ids_sha256": {
+            name: hashlib.sha256(
+                ",".join(map(str, partition["design_id"].tolist())).encode("utf-8")
+            ).hexdigest()
+            for name, partition in (("train", train_data), ("validation", validation_data), ("test", test_data))
+        },
         "best_epoch": best_epoch,
         "training_seconds": training_seconds,
         "normalization": {
@@ -528,6 +572,9 @@ def main() -> None:
             "y_mean": y_mean.tolist(),
             "y_scale": y_scale.tolist(),
         },
+        "source_revision": _git_revision(),
+        "python_version": __import__("sys").version,
+        "software_versions": _software_versions(),
     }
 
     metadata_path.write_text(

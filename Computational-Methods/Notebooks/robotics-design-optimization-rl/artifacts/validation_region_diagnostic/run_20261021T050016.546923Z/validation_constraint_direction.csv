@@ -1,0 +1,15 @@
+region,target,units,dangerous_error_direction,sample_count,dangerous_error_count,dangerous_error_fraction,worst_dangerous_error_magnitude
+all_validation,omega1,rad/s,frequency_overprediction,750,392,0.5226666666666666,0.5199213027954102
+lowest_inertia_validation_10pct,omega1,rad/s,frequency_overprediction,75,34,0.4533333333333333,0.5199213027954102
+all_validation,omega2,rad/s,frequency_overprediction,750,341,0.45466666666666666,1.0658035278320312
+lowest_inertia_validation_10pct,omega2,rad/s,frequency_overprediction,75,30,0.4,0.6138153076171875
+all_validation,omega3,rad/s,frequency_overprediction,750,300,0.4,1.3007736206054688
+lowest_inertia_validation_10pct,omega3,rad/s,frequency_overprediction,75,29,0.38666666666666666,1.0377044677734375
+all_validation,theta2_max,rad,maximum_response_underprediction,750,357,0.476,0.0008550956845283508
+lowest_inertia_validation_10pct,theta2_max,rad,maximum_response_underprediction,75,42,0.56,0.0007522446103394032
+all_validation,theta3_max,rad,maximum_response_underprediction,750,335,0.44666666666666666,0.0008270395919680595
+lowest_inertia_validation_10pct,theta3_max,rad,maximum_response_underprediction,75,28,0.37333333333333335,0.00043474603444337845
+all_validation,alpha_max,rad/s^2,maximum_response_underprediction,750,450,0.6,3.0638504028320312
+lowest_inertia_validation_10pct,alpha_max,rad/s^2,maximum_response_underprediction,75,39,0.52,2.8276443481445312
+all_validation,theta_rms,rad,maximum_response_underprediction,750,423,0.564,7.5978459790349e-05
+lowest_inertia_validation_10pct,theta_rms,rad,maximum_response_underprediction,75,40,0.5333333333333333,4.6901870518922806e-05

@@ -156,7 +156,7 @@ def run_design_study(
     baseline_design: NDArray[np.float64] | None = None,
     n_starts: int = 5,
     seed: int = 42,
-    max_iterations: int = 500,
+    max_iterations: int = 50000,
     tolerance: float = 1e-9,
 ) -> DesignStudyResult:
     """
@@ -499,7 +499,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--max-iterations",
         type=int,
-        default=500,
+        default=50000,
         help="Maximum SLSQP iterations per start.",
     )
     parser.add_argument(
@@ -512,55 +512,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
-    args = parse_args()
-
-    if args.n_starts < 1:
-        raise ValueError("--n-starts must be at least one.")
-
-    if args.max_iterations < 1:
-        raise ValueError("--max-iterations must be positive.")
-
-    if not np.isfinite(args.tolerance) or args.tolerance <= 0.0:
-        raise ValueError("--tolerance must be positive and finite.")
-
-    model, _metadata = load_surrogate(args.model_dir)
-
-    result = run_design_study(
-        model,
-        n_starts=args.n_starts,
-        seed=args.seed,
-        max_iterations=args.max_iterations,
-        tolerance=args.tolerance,
+    raise SystemExit(
+        "This legacy optimizer does not apply validation-calibrated constraints "
+        "or enforce independent-physics acceptance. Use `python -m "
+        "src.optimization_adapter --calibration-dir <diagnostic-run>` instead."
     )
-
-    save_results(result, args.output_dir)
-
-    outcome = result.outcome
-    baseline_inertia = float(np.sum(outcome.baseline_design[:3]))
-    optimized_inertia = float(np.sum(outcome.optimized_design[:3]))
-    reduction = 100.0 * (1.0 - optimized_inertia / baseline_inertia)
-
-    print("\nTORSIONAL DESIGN OPTIMIZATION")
-    print("=" * 60)
-    print(f"Baseline total inertia:   {baseline_inertia:.8g} kg m^2")
-    print(f"Optimized total inertia:  {optimized_inertia:.8g} kg m^2")
-    print(f"Inertia reduction:        {reduction:.3f}%")
-    print(f"Surrogate feasible:       {outcome.surrogate_feasible}")
-    print(f"True-physics feasible:    {result.true_physics_feasible}")
-
-    if outcome.solver_result is not None:
-        print(f"Solver success:           {outcome.solver_result.success}")
-        print(f"Solver message:           {outcome.solver_result.message}")
-    else:
-        print("Solver result:             Baseline retained")
-
-    if not result.true_physics_feasible:
-        print(
-            "\nWARNING: The selected design did not satisfy all baseline-relative "
-            "constraints when evaluated with the original physics model."
-        )
-
-    print(f"\nResults saved to: {args.output_dir.resolve()}")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,11 @@ The existing SLSQP implementation remains in src/optimization.py.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.metadata
 import json
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +23,13 @@ import pandas as pd
 import torch
 
 from scripts.generate_dataset import evaluate_design
-from src.optimization import optimize_design, constraint_margins
+from src.optimization import (
+    FEASIBILITY_TOLERANCE,
+    SLSQP_FINITE_DIFFERENCE_STEP,
+    optimize_design,
+    constraint_margins,
+    load_validation_allowances,
+)
 from src.surrogate_inference import load_surrogate
 from src.dataset_config import LOWER_BOUNDS, UPPER_BOUNDS
 
@@ -42,9 +52,64 @@ TARGET_COLUMNS = [
     "theta_rms",
 ]
 
-DEFAULT_MODEL_DIR = Path("artifacts/surrogate_benchmark")
-OUTPUT_DIR = Path("artifacts/surrogate_optimization")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_MODEL_DIR = PROJECT_ROOT / "artifacts/surrogate_benchmark"
+DEFAULT_DATASET = PROJECT_ROOT / "data/full_dataset.csv"
+OUTPUT_DIR = PROJECT_ROOT / "artifacts/surrogate_optimization"
 PHYSICS_FEASIBILITY_TOLERANCE = 1e-6
+CONSTRAINT_NAMES = (
+    "omega1_minimum", "omega2_minimum", "omega3_minimum",
+    "theta2_maximum", "theta3_maximum", "alpha_maximum", "theta_rms_maximum",
+)
+
+
+def classify_candidate(design, surrogate_margins, physics_margins, lower, upper,
+                       baseline_inertia, solver_success=False):
+    """Classify independently of solver termination; margins are physical units."""
+    design = np.asarray(design, dtype=float).reshape(-1)
+    surrogate_margins = np.asarray(surrogate_margins, dtype=float).reshape(-1)
+    physics_margins = np.asarray(physics_margins, dtype=float).reshape(-1)
+    lower, upper = np.asarray(lower), np.asarray(upper)
+    finite = (design.shape == lower.shape and surrogate_margins.shape == (7,)
+              and physics_margins.shape == (7,) and np.all(np.isfinite(design))
+              and np.all(np.isfinite(surrogate_margins)) and np.all(np.isfinite(physics_margins)))
+    in_bounds = bool(finite and np.all(design >= lower) and np.all(design <= upper))
+    surrogate_feasible = bool(finite and np.all(surrogate_margins >= -FEASIBILITY_TOLERANCE))
+    physics_feasible = bool(finite and np.all(physics_margins >= -PHYSICS_FEASIBILITY_TOLERANCE))
+    inertia = float(np.sum(design[:3])) if finite else None
+    improves = bool(inertia is not None and inertia < baseline_inertia - 1e-12)
+    accepted = bool(in_bounds and surrogate_feasible and physics_feasible and improves)
+    reasons = []
+    if not finite: reasons.append("invalid_or_nonfinite_candidate")
+    if finite and not in_bounds: reasons.append("out_of_bounds")
+    if finite and not surrogate_feasible: reasons.append("surrogate_screen_failed")
+    if finite and not physics_feasible: reasons.append("independent_physics_failed")
+    if finite and not improves: reasons.append("does_not_improve_baseline")
+    return {"in_bounds": in_bounds, "surrogate_feasible": surrogate_feasible,
+            "physics_feasible": physics_feasible, "improves_baseline": improves,
+            "accepted_for_selection": accepted, "rejection_reasons": reasons,
+            "solver_success": bool(solver_success), "total_inertia": inertia}
+
+
+def select_candidate(records):
+    """Return the accepted candidate name with minimum physical total inertia."""
+    eligible = [(name, record["total_inertia"]) for name, record in records.items()
+                if record.get("accepted_for_selection")]
+    return min(eligible, key=lambda item: item[1])[0] if eligible else None
+
+
+def _sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _fresh_output_dir():
+    path = OUTPUT_DIR / datetime.now(timezone.utc).strftime("run_%Y%m%dT%H%M%S.%fZ")
+    path.mkdir(parents=True, exist_ok=False)
+    return path
 
 
 class InferenceModelAdapter:
@@ -173,14 +238,24 @@ def compare_outputs(
 
 def run_optimization(
     model_dir: Path = DEFAULT_MODEL_DIR,
+    calibration_dir: Path | None = None,
+    dataset_path: Path = DEFAULT_DATASET,
     n_starts: int = 5,
     seed: int = 42,
-    max_iterations: int = 5000,
+    max_iterations: int = 50000,
     tolerance: float = 1e-9,
 ) -> dict[str, Any]:
     """Run SLSQP and COBYQA, verify candidates, and select the best."""
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    if calibration_dir is None:
+        raise FileNotFoundError("Validation calibration is required. Run `python -m scripts.diagnose_validation_region` and pass its run directory with --calibration-dir.")
+    def project_path(value: Path) -> Path:
+        value = Path(value)
+        return (value if value.is_absolute() else PROJECT_ROOT / value).resolve()
+
+    model_dir = project_path(model_dir)
+    dataset_path = project_path(dataset_path)
+    calibration_dir = project_path(calibration_dir)
 
     print(f"Loading surrogate from: {model_dir.resolve()}")
     inference = load_surrogate(model_dir)
@@ -191,6 +266,15 @@ def run_optimization(
     solver_runs = {}
     candidate_records = {}
 
+    global_allowances, low_allowances, low_inertia_cutoff = load_validation_allowances(
+        calibration_dir, model_dir, dataset_path
+    )
+    lower = np.asarray(LOWER_BOUNDS, dtype=np.float64)
+    upper = np.asarray(UPPER_BOUNDS, dtype=np.float64)
+    baseline_design_for_run = 0.5 * (lower + upper)
+    baseline_physics_for_run = physics_outputs(baseline_design_for_run)
+    output_dir = _fresh_output_dir()
+
     # Use identical configuration and seed for both solvers.
     for solver in solver_names:
         print(f"\n{'=' * 60}")
@@ -200,11 +284,16 @@ def run_optimization(
         try:
             outcome = optimize_design(
                 model,
+                baseline_design=baseline_design_for_run,
                 n_starts=n_starts,
                 seed=seed,
                 max_iterations=max_iterations,
                 tolerance=tolerance,
                 solver=solver,
+                validation_allowances=global_allowances,
+                low_inertia_allowances=low_allowances,
+                low_inertia_cutoff=low_inertia_cutoff,
+                constraint_reference_outputs=baseline_physics_for_run,
             )
 
             outcomes[solver] = outcome
@@ -255,7 +344,7 @@ def run_optimization(
         first_outcome.baseline_outputs, dtype=np.float64
     ).reshape(-1)
 
-    baseline_physics = physics_outputs(baseline_design)
+    baseline_physics = baseline_physics_for_run
     baseline_inertia = float(np.sum(baseline_design[:3]))
 
     baseline_comparison = compare_outputs(
@@ -281,13 +370,24 @@ def run_optimization(
     feasible_candidates = []
 
     for solver, outcome in outcomes.items():
-        design = np.asarray(
-            outcome.optimized_design, dtype=np.float64
-        ).reshape(-1)
+      candidates = outcome.candidates or ({"design": outcome.optimized_design,
+          "outputs": outcome.optimized_outputs, "result": outcome.solver_result,
+          "surrogate_feasible": outcome.surrogate_feasible,
+          "margins": np.zeros(7)},)
+      for candidate_index, candidate_record in enumerate(candidates, start=1):
+        design = np.asarray(candidate_record["design"], dtype=np.float64).reshape(-1)
+        surrogate_outputs = np.asarray(candidate_record["outputs"], dtype=np.float64).reshape(-1)
 
-        surrogate_outputs = np.asarray(
-            outcome.optimized_outputs, dtype=np.float64
-        ).reshape(-1)
+        # Reject malformed/out-of-bound candidates before invoking physics.
+        if design.shape != lower.shape or not np.all(np.isfinite(design)) or np.any(design < lower) or np.any(design > upper):
+            solver_runs[solver].setdefault("candidate_records", []).append({
+                "candidate": f"{solver}_start_{candidate_index}",
+                "solver_success": bool(getattr(candidate_record.get("result"), "success", False)),
+                "in_bounds": False, "physics_feasible": False,
+                "surrogate_feasible": bool(candidate_record.get("surrogate_feasible", False)),
+                "accepted_for_selection": False, "rejection_reason": "invalid_or_out_of_bounds",
+            })
+            continue
 
         actual_outputs = physics_outputs(design)
 
@@ -297,47 +397,41 @@ def run_optimization(
             actual_outputs, baseline_physics
         )
 
-        in_bounds = bool(
-            np.all(design >= lower) and np.all(design <= upper)
-        )
-
-        physics_feasible = bool(
-            in_bounds
-            and np.all(
-                physics_margins >= -PHYSICS_FEASIBILITY_TOLERANCE
-            )
-        )
-
         inertia = float(np.sum(design[:3]))
-        improves_baseline = inertia < baseline_inertia - 1e-12
-
-        accepted = bool(
-            outcome.surrogate_feasible
-            and physics_feasible
-            and improves_baseline
+        result = candidate_record.get("result")
+        candidate_name = f"{solver}_start_{candidate_index}"
+        classification = classify_candidate(
+            design, candidate_record["margins"], physics_margins, lower, upper,
+            baseline_inertia, getattr(result, "success", False),
         )
+        in_bounds = classification["in_bounds"]
+        physics_feasible = classification["physics_feasible"]
+        improves_baseline = classification["improves_baseline"]
+        accepted = classification["accepted_for_selection"]
 
-        result = outcome.solver_result
-
-        solver_runs[solver].update({
+        solver_runs[solver].setdefault("candidate_records", []).append({
+            "candidate": candidate_name,
+            "solver_success": bool(result.success) if result is not None else False,
+            "solver_termination_status": str(result.message) if result is not None else "no solver result",
+            "solver_iterations": int(result.nit) if result is not None and getattr(result, "nit", None) is not None else None,
+            "solver_function_evaluations": int(result.nfev) if result is not None and getattr(result, "nfev", None) is not None else None,
+            "solver_objective_normalized": float(result.fun) if result is not None and np.isfinite(result.fun) else None,
             "design": dict(zip(INPUT_COLUMNS, design.tolist())),
             "total_inertia": inertia,
+            "surrogate_predictions": dict(zip(TARGET_COLUMNS, candidate_record["outputs"].tolist())),
+            "validation_allowances": dict(zip(TARGET_COLUMNS, candidate_record["allowances"].tolist())),
+            "surrogate_margins": dict(zip(CONSTRAINT_NAMES, candidate_record["margins"].tolist())),
+            "physics_margins": dict(zip(CONSTRAINT_NAMES, physics_margins.tolist())),
             "minimum_physics_margin": float(np.min(physics_margins)),
             "in_bounds": in_bounds,
+            "surrogate_feasible": classification["surrogate_feasible"],
             "physics_feasible": physics_feasible,
             "improves_baseline": improves_baseline,
             "accepted_for_selection": accepted,
-            "solver_success": (
-                bool(result.success) if result is not None else False
-            ),
-            "solver_message": (
-                str(result.message)
-                if result is not None
-                else "No improved surrogate-feasible candidate accepted."
-            ),
+            "rejection_reason": None if accepted else ";".join(classification["rejection_reasons"]),
         })
 
-        candidate_records[solver] = {
+        candidate_records[candidate_name] = {
             "design": design,
             "surrogate_outputs": surrogate_outputs,
             "physics_outputs": actual_outputs,
@@ -349,28 +443,41 @@ def run_optimization(
         }
 
         comparison = compare_outputs(surrogate_outputs, actual_outputs)
-        comparison.insert(0, "design", solver)
+        comparison.insert(0, "design", candidate_name)
         all_comparisons.append(comparison)
 
-        print(f"\n{solver} verification:")
+        print(f"\n{candidate_name} verification:")
         print(f"  Total inertia: {inertia:.10f}")
         print(f"  In bounds: {in_bounds}")
-        print(f"  Surrogate feasible: {outcome.surrogate_feasible}")
+        print(f"  Surrogate feasible: {candidate_record['surrogate_feasible']}")
         print(f"  Physics feasible: {physics_feasible}")
         print(f"  Minimum physics margin: {np.min(physics_margins):+.8e}")
+        physics_constraint_names = (
+            "omega1_minimum",
+            "omega2_minimum",
+            "omega3_minimum",
+            "theta2_maximum",
+            "theta3_maximum",
+            "alpha_maximum",
+            "theta_rms_maximum",
+        )
+
+        print("  Individual physics margins:")
+        for name, margin in zip(
+            physics_constraint_names,
+            physics_margins,
+        ):
+            print(f"    {name}: {margin:+.8e}")
         print(f"  Improves baseline: {improves_baseline}")
         print(f"  Accepted for selection: {accepted}")
 
         if accepted:
-            feasible_candidates.append(solver)
+            feasible_candidates.append(candidate_name)
 
     # Select the lowest-inertia candidate that passes BOTH surrogate
     # feasibility and independent physics feasibility.
     if feasible_candidates:
-        selected_solver = min(
-            feasible_candidates,
-            key=lambda name: candidate_records[name]["inertia"],
-        )
+        selected_solver = min(feasible_candidates, key=lambda name: candidate_records[name]["inertia"])
         selected = candidate_records[selected_solver]
         selection_reason = (
             "Lowest-inertia candidate passing surrogate and physics checks."
@@ -389,7 +496,7 @@ def run_optimization(
 
     # Export comparisons for baseline and both solver candidates.
     pd.concat(all_comparisons, ignore_index=True).to_csv(
-        OUTPUT_DIR / "physics_verification.csv",
+        output_dir / "physics_verification.csv",
         index=False,
     )
 
@@ -405,7 +512,7 @@ def run_optimization(
         })
 
     pd.DataFrame(design_rows).to_csv(
-        OUTPUT_DIR / "design_comparison.csv",
+        output_dir / "design_comparison.csv",
         index=False,
     )
 
@@ -417,11 +524,22 @@ def run_optimization(
             "seed": seed,
             "max_iterations": max_iterations,
             "tolerance": tolerance,
+            "slsqp_finite_difference_step_scaled": SLSQP_FINITE_DIFFERENCE_STEP,
             "physics_feasibility_tolerance": (
                 PHYSICS_FEASIBILITY_TOLERANCE
             ),
+            "validation_allowances_empirical": dict(zip(TARGET_COLUMNS, global_allowances.tolist())),
+            "low_inertia_allowances_empirical": dict(zip(TARGET_COLUMNS, low_allowances.tolist())),
+            "low_inertia_cutoff_total_inertia": low_inertia_cutoff,
+            "allowance_method": "directional maximum error on existing validation partition; finite-sample empirical safeguard, not a guarantee",
+            "low_inertia_definition": "J1+J2+J3 <= validation 10th percentile cutoff",
+            "surrogate_feasibility_tolerance": FEASIBILITY_TOLERANCE,
         },
         "solver_runs": solver_runs,
+        "candidates": {
+            solver: details.get("candidate_records", [])
+            for solver, details in solver_runs.items()
+        },
         "selection": {
             "selected_solver": selected_solver,
             "reason": selection_reason,
@@ -464,10 +582,46 @@ def run_optimization(
         },
     }
 
-    (OUTPUT_DIR / "optimization_summary.json").write_text(
+    summary["run_directory"] = str(output_dir.resolve())
+    (output_dir / "optimization_summary.json").write_text(
         json.dumps(summary, indent=2, allow_nan=False),
         encoding="utf-8",
     )
+
+    try:
+        revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=PROJECT_ROOT, text=True, stderr=subprocess.DEVNULL).strip()
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=PROJECT_ROOT, text=True, stderr=subprocess.DEVNULL).strip())
+    except (OSError, subprocess.CalledProcessError):
+        revision, dirty = None, None
+    versions = {}
+    for package in ("numpy", "scipy", "pandas", "torch", "scikit-learn"):
+        try:
+            versions[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            versions[package] = None
+    manifest = {
+        "inputs": {"dataset_path": str(dataset_path), "model_directory": str(model_dir),
+            "calibration_directory": str(calibration_dir)},
+        "dataset_sha256": _sha256(dataset_path) if dataset_path.is_file() else None,
+        "checkpoint_sha256": _sha256(model_dir / "selected_model_state.pt") if (model_dir / "selected_model_state.pt").is_file() else None,
+        "model_metadata_sha256": _sha256(model_dir / "selected_model_metadata.json") if (model_dir / "selected_model_metadata.json").is_file() else None,
+        "calibration_metadata_sha256": _sha256(calibration_dir / "diagnostic_metadata.json"),
+        "calibration_summary_sha256": _sha256(calibration_dir / "validation_error_summary.csv"),
+        "calibration_directions_sha256": _sha256(calibration_dir / "validation_constraint_direction.csv"),
+        "source_revision": revision, "source_tree_dirty": dirty,
+        "python": __import__("sys").version, "dependencies": versions,
+        "configuration": {"solver_methods": list(solver_names), "n_starts": n_starts,
+            "seed": seed, "max_iterations": max_iterations, "tolerance": tolerance,
+            "slsqp_finite_difference_step_scaled": SLSQP_FINITE_DIFFERENCE_STEP,
+            "lower_bounds": lower.tolist(), "upper_bounds": upper.tolist()},
+        "baseline": {"design": baseline_design.tolist(), "total_inertia_kg_m2": baseline_inertia},
+        "selected": {"name": selected_solver, "design": selected_design.tolist(),
+            "total_inertia_kg_m2": selected["inertia"], "acceptance_reason": selection_reason},
+        "outputs_sha256": {name: _sha256(output_dir / name) for name in
+            ("physics_verification.csv", "design_comparison.csv", "optimization_summary.json")},
+        "unknowns": ["full per-evaluation solver trace", "historical provenance of pre-existing model artifacts"],
+    }
+    (output_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2, allow_nan=False), encoding="utf-8")
 
     print(f"\n{'=' * 60}")
     print("FINAL SELECTION")
@@ -477,7 +631,7 @@ def run_optimization(
     print(f"Baseline inertia: {baseline_inertia:.10f}")
     print(f"Selected inertia: {selected['inertia']:.10f}")
     print(f"Selected design: {selected_design}")
-    print(f"Results saved to: {OUTPUT_DIR.resolve()}")
+    print(f"Results saved to: {output_dir.resolve()}")
 
     return summary
 
@@ -493,9 +647,12 @@ def main() -> None:
         default=DEFAULT_MODEL_DIR,
         help="Directory accepted by src.surrogate_inference.load_surrogate.",
     )
+    parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
+    parser.add_argument("--calibration-dir", type=Path, required=True,
+                        help="New validation-only diagnostic run directory; required, no weaker fallback.")
     parser.add_argument("--n-starts", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--max-iterations", type=int, default=5000)
+    parser.add_argument("--max-iterations", type=int, default=50000)
     parser.add_argument("--tolerance", type=float, default=1e-9)
     args = parser.parse_args()
 
@@ -504,6 +661,8 @@ def main() -> None:
 
     run_optimization(
         model_dir=args.model_dir,
+        calibration_dir=args.calibration_dir,
+        dataset_path=args.dataset,
         n_starts=args.n_starts,
         seed=args.seed,
         max_iterations=args.max_iterations,

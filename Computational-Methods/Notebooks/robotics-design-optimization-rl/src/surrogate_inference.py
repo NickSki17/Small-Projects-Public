@@ -26,6 +26,7 @@ This module loads a saved model. It does not train or select models.
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from typing import Mapping, Sequence
 
@@ -75,7 +76,8 @@ class SurrogateInference:
     """Validated inference interface for a saved surrogate model."""
 
     def __init__(self, artifact_dir: Path | str = DEFAULT_ARTIFACT_DIR):
-        self.artifact_dir = Path(artifact_dir).resolve()
+        artifact_path = Path(artifact_dir)
+        self.artifact_dir = (artifact_path if artifact_path.is_absolute() else PROJECT_ROOT / artifact_path).resolve()
         metadata_path = self.artifact_dir / "selected_model_metadata.json"
 
         if not metadata_path.is_file():
@@ -109,6 +111,11 @@ class SurrogateInference:
             raise FileNotFoundError(
                 f"Selected model artifact not found: {model_path}"
             )
+        expected_digest = self.metadata.get("checkpoint_sha256")
+        if expected_digest:
+            digest = hashlib.sha256(model_path.read_bytes()).hexdigest()
+            if digest != expected_digest:
+                raise ValueError("Selected model checkpoint fingerprint does not match metadata.")
 
         self.model_type = model_type
         self.model_name = self.metadata["model"]
